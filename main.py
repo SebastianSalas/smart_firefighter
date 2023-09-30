@@ -1,3 +1,5 @@
+import numpy as np
+
 class SmartFirefighter:
   def main(self):
     with open("resources/map.txt", "r") as file:
