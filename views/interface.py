@@ -1,10 +1,3 @@
-''' Proyecto #1: Bombero Inteligente - Inteligencia artificial
-Hecho por:
-    - Janiert Sebastián Salas - 201941265
-    - Diego Fernando Victoria - 202125877
-    - Jhon Alexander Valencia - 202042426
-'''
-
 import tkinter as tk
 import numpy as np
 
@@ -27,7 +20,6 @@ class mainInterface(tk.Tk):
         windowWidth, windowHeight = round(screen_width / 2), round(screen_height / 2)
         x, y = round((screen_width - windowWidth) / 2), round((screen_height - windowHeight) / 2) 
         self.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
-        #self.geometry(f"+{x}+{y}")
         self.config(bg="white")
         self.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
         self.resizable(0,0)
@@ -46,25 +38,28 @@ class mainInterface(tk.Tk):
         self.canvas_matriz = tk.Canvas(self.left_frame, bg="white", bd=2, relief="solid")
         self.canvas_matriz.pack(expand=True, fill="both")
 
-        # Canvas para representar un Canvas en el contenedor derecho
+        # Canvas en el contenedor derecho
         self.right_canvas = tk.Canvas(self.right_frame, bg="white", bd=2, relief="solid")
         self.right_canvas.pack(expand=True, fill="both")
 
-        # Elementos en el contenedor derecho
+        # Crear elementos en el contenedor derecho
         self.label_derecho = tk.Label(self.right_canvas, text="Contenedor derecho")
         self.label_derecho.pack()
 
-        # Función para crear 100 rectángulos en el Canvas
-        self.dibujar_matriz()
+        # Asociar el evento de configuración al método de dibujo
+        self.canvas_matriz.bind("<Configure>", self.dibujar_matriz)
 
-    def dibujar_matriz(self):
+    def dibujar_matriz(self, event=None):
+        # Eliminar dibujos anteriores
+        self.canvas_matriz.delete("all")
+
         # Número de filas y columnas en la matriz
         filas = 10
         columnas = 10
 
         # Tamaño de cada celda en el Canvas
-        ancho_celda = self.canvas_matriz.winfo_reqwidth() // columnas
-        alto_celda = self.canvas_matriz.winfo_reqheight() // filas
+        ancho_celda = self.canvas_matriz.winfo_width() // columnas
+        alto_celda = self.canvas_matriz.winfo_height() // filas
 
         for fila in range(filas):
             for columna in range(columnas):
@@ -95,6 +90,7 @@ class mainInterface(tk.Tk):
                     color = "lightblue"
 
                 # Dibujar rectángulo en el Canvas
+                texto = f"{x2 - x1}x{y2 - y1}"
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
                 x_centro = (x1 + x2) // 2
                 y_centro = (y1 + y2) // 2
