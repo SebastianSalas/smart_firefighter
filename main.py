@@ -5,6 +5,5 @@ class SmartFirefighter:
     app = mainInterface()
     app.mainloop()
 
-    
 if __name__ == "__main__":
     SmartFirefighter().main()

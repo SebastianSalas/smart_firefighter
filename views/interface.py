@@ -5,7 +5,6 @@ Hecho por:
     - Jhon Alexander Valencia - 202042426
 '''
 
-import random
 import tkinter as tk
 import numpy as np
 
@@ -27,25 +26,32 @@ class mainInterface(tk.Tk):
         # Calcular las dimensiones y posición de la ventana
         windowWidth, windowHeight = round(screen_width / 2), round(screen_height / 2)
         x, y = round((screen_width - windowWidth) / 2), round((screen_height - windowHeight) / 2) 
-        #self.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
-        self.geometry(f"+{x}+{y}")
+        self.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
+        #self.geometry(f"+{x}+{y}")
+        self.config(bg="white")
         self.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
         self.resizable(0,0)
 
         # Crear el contenedor izquierdo
-        self.frame_izquierdo = tk.Frame(self, width=(0.65 * screen_width), height=windowHeight, padx=10, pady=10, bd=2, relief="solid")
-        self.frame_izquierdo.pack(side="left", fill="y")
+        self.left_frame = tk.Frame(self, padx=10, pady=10, bg="white")
+        self.left_frame.pack(side="left", fill="y")
+        self.left_frame.place(relx=0, rely=0, relwidth=0.65, relheight=1)
 
         # Crear el contenedor derecho
-        self.frame_derecho = tk.Frame(self, width=(0.35 * screen_width), height=windowHeight, padx=10, pady=10, bd=2, relief="solid")
-        self.frame_derecho.pack(side="right", fill="y")
-
+        self.right_frame = tk.Frame(self, padx=10, pady=10, bg="white")
+        self.right_frame.pack(side="right", fill="y")
+        self.right_frame.place(relx=0.64, rely=0, relwidth=0.35, relheight=1)
+        
         # Canvas para representar la matríz en el contenedor izquierdo
-        self.canvas_matriz = tk.Canvas(self.frame_izquierdo, bg="white")
+        self.canvas_matriz = tk.Canvas(self.left_frame, bg="white", bd=2, relief="solid")
         self.canvas_matriz.pack(expand=True, fill="both")
 
+        # Canvas para representar un Canvas en el contenedor derecho
+        self.right_canvas = tk.Canvas(self.right_frame, bg="white", bd=2, relief="solid")
+        self.right_canvas.pack(expand=True, fill="both")
+
         # Elementos en el contenedor derecho
-        self.label_derecho = tk.Label(self.frame_derecho, text="Contenedor Derecho")
+        self.label_derecho = tk.Label(self.right_canvas, text="Contenedor derecho")
         self.label_derecho.pack()
 
         # Función para crear 100 rectángulos en el Canvas
@@ -70,7 +76,6 @@ class mainInterface(tk.Tk):
                 y2 = y1 + alto_celda
 
                 # Color y texto para el rectángulo
-                color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
                 texto = ""
                 if matriz[fila][columna] == 0:
                     color = "white"
@@ -91,7 +96,6 @@ class mainInterface(tk.Tk):
 
                 # Dibujar rectángulo en el Canvas
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
-
                 x_centro = (x1 + x2) // 2
                 y_centro = (y1 + y2) // 2
                 self.canvas_matriz.create_text(x_centro, y_centro, text=texto, fill="black")
