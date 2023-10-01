@@ -1,7 +1,8 @@
-from views.writeMap import writeMap as map
+from views.interfaz import Interfaz
 class SmartFirefighter:
-  def main(self):
-    print(map)
-    
+    def main(self):
+        app = Interfaz()
+        app.mainloop()
+          
 if __name__ == "__main__":
     SmartFirefighter().main()
