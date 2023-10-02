@@ -25,7 +25,7 @@ class mainInterface(tk.Tk):
         # Propiedades de la ventana
         self.config(bg="white")
         self.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
-        #self.resizable(0,0)
+        self.resizable(0,0)
 
         # Crear el contenedor izquierdo
         self.left_frame = tk.Frame(self, padx=10, pady=10, bg="white")
@@ -40,13 +40,11 @@ class mainInterface(tk.Tk):
         # Canvas para representar la matríz en el contenedor izquierdo
         self.canvas_matriz = tk.Canvas(self.left_frame, bg="white", bd=2, relief="solid")
         self.canvas_matriz.pack(expand=True, fill="both")
-        # Evento para adaptar la matriz al tamaño del contenedor
         self.canvas_matriz.bind("<Configure>", self.dibujar_matriz)
 
         # Canvas en el contenedor derecho
         self.right_canvas = tk.Canvas(self.right_frame, bg="white", bd=2, relief="solid")
         self.right_canvas.pack(expand=True, fill="both")
-        # Evento para adaptar el contenido al tamaño del contenedor
         self.right_canvas.bind("<Configure>", self.right_canvas_resize)
 
         # Crear elementos en el contenedor derecho
@@ -55,67 +53,82 @@ class mainInterface(tk.Tk):
         self.first_label = tk.Label(self.right_canvas, image = self.photo)
         self.first_label.config(bg="white")
         self.first_label.pack(padx= 10, pady=10, fill="x")
+        
         # Etiqueta con el título del programa
         self.title_label = tk.Label(self.right_canvas, text="Bombero inteligente", fg="red", font=("Helvetica", 18))
         self.title_label.config(bg="white")
         self.title_label.pack(pady="5", padx="10", fill="x")
+        
         # Etiqueta de selección de tipo de búsqueda
         self.selec_search_label = tk.Label(self.right_canvas, text="Seleccione el tipo de búsqueda:", fg="black", font=("Helvetica", 11), anchor="w", justify="left")
         self.selec_search_label.config(bg="white")
         self.selec_search_label.pack(pady="5", padx="10", fill="x")
+        
         # Selector de tipo de búsqueda
         search_options = ["Seleccionar...", "Búsqueda no informada", "Búsqueda informada"]
-        options_1 = tk.StringVar(self)
-        options_1.set(search_options[0])
-        select_search = tk.OptionMenu(self.right_canvas, options_1, *search_options)
+        selected_search = tk.StringVar(self)
+        selected_search.set(search_options[0])
+        select_search = tk.OptionMenu(self.right_canvas, selected_search, *search_options)
         select_search.pack(padx="10", fill="x")
         select_search.config(font=('Helvetica', 10), bg="indianred", fg="black")
+        
         # Etiqueta de selección de algoritmo
-        self.selec_algorithm = tk.Label(self.right_canvas, text="Seleccione el algoritmo:", fg="black", font=("Helvetica", 11), anchor="w", justify="left")
-        self.selec_algorithm.config(bg="white")
-        self.selec_algorithm.pack(pady="5", padx="10", fill="x")
+        self.select_algorithm_label = tk.Label(self.right_canvas, text="Seleccione el algoritmo:", fg="black", font=("Helvetica", 11), anchor="w", justify="left")
+        self.select_algorithm_label.config(bg="white")
+        self.select_algorithm_label.pack(pady="5", padx="10", fill="x")
+        
         # Selector del algoritmo de búsqueda a utilizar
         search_algorithms = {
-            "Búsqueda no informada": ["Amplitud", "Profundidad", "Costo uniforme"],
-            "Búsqueda informada": ["Avara", "A*"]
+            "Búsqueda no informada": ["Seleccionar...", "Amplitud", "Costo uniforme", "Profundidad"],
+            "Búsqueda informada": ["Seleccionar...", "Avara", "A*"]
         }
 
+        # Selector del algortimo a utilizar
         self.selected_algorithm = tk.StringVar(self.right_canvas)
-        self.search_algorithm_menu = tk.OptionMenu(self.right_canvas, self.selected_algorithm, "")
-        self.search_algorithm_menus = {}
+        self.select_algorithm_search = tk.OptionMenu(self.right_canvas, self.selected_algorithm, "")
+        self.search_algorithm_options = {}
 
+        # Crear el menú desplegable para el tipo de búsqueda seleccionado
         for algorithm_type, algorithm_list in search_algorithms.items():
             algorithm_menu = tk.OptionMenu(self.right_canvas, self.selected_algorithm, *algorithm_list)
             algorithm_menu.config(font=('Helvetica', 10), bg="indianred", fg="black")
             algorithm_menu.pack(padx="10", fill="x")
             algorithm_menu.pack_forget()
-            self.search_algorithm_menus[algorithm_type] = algorithm_menu
+            self.search_algorithm_options[algorithm_type] = algorithm_menu
 
         def search(*args):
-            algorithm_type = options_1.get()
+            algorithm_type = selected_search.get()
             self.selected_algorithm.set(algorithm_list[0])
             
-            # Ocultar todos los menús
-            for menu in self.search_algorithm_menus.values():
+            # Ocultar los menús
+            for menu in self.search_algorithm_options.values():
                 menu.pack_forget()
 
             # Mostrar el menú correspondiente al tipo de búsqueda seleccionado
-            if algorithm_type in self.search_algorithm_menus:
-                self.search_algorithm_menu = self.search_algorithm_menus[algorithm_type]
-                self.search_algorithm_menu.pack(padx="10", fill="x")
+            if algorithm_type in self.search_algorithm_options:
+                self.select_algorithm_search = self.search_algorithm_options[algorithm_type]
+                self.select_algorithm_search.pack(padx="10", fill="x")
                 
                 # Establecer el primer elemento como seleccionado
                 algorithms_for_type = search_algorithms.get(algorithm_type, [])
                 if algorithms_for_type:
                     self.selected_algorithm.set(algorithms_for_type[0])
 
-        options_1.trace_add("write", search)
+        selected_search.trace_add("write", search)
+
+        # Crear un frame para contener los botones
+        self.button_frame = tk.Frame(self.right_canvas, bg="white")
+        self.button_frame.pack(side=tk.BOTTOM, fill="x", padx=10, pady=10)
 
         # Botón de inicio del algoritmo
-        boton_inicio = tk.Button(self.right_canvas, text="Iniciar", bg="indianred", fg="black")
-        boton_inicio.pack()
-        boton_inicio.config(font=('Helvatica', 12))
+        start_button = tk.Button(self.button_frame, text="Iniciar", bg="indianred", fg="black")
+        start_button.pack(side=tk.LEFT, fill="x", expand=True, padx=5)
+        start_button.config(font=('Helvatica', 11))
 
+        # Botón de reiniciar
+        restart_button = tk.Button(self.button_frame, text="Reiniciar", bg="indianred", fg="black")
+        restart_button.pack(side=tk.RIGHT, fill="x", expand=True, padx=5)
+        restart_button.config(font=('Helvatica', 11))
 
     def resize_image(self, image, size):
         return ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
@@ -138,7 +151,6 @@ class mainInterface(tk.Tk):
         # Tamaño de cada rectángulo en el Canvas
         rectangle_width = self.canvas_matriz.winfo_width() // columns
         rentangle_height = self.canvas_matriz.winfo_height() // rows
-
         
         for row in range(rows):
             for column in range(columns):
