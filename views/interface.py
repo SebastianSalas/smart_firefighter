@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 import numpy as np
 from PIL import Image, ImageTk
@@ -47,7 +48,7 @@ class mainInterface(tk.Tk):
         self.right_canvas.pack(expand=True, fill="both")
         self.right_canvas.bind("<Configure>", self.right_canvas_resize)
 
-        # Crear elementos en el contenedor derecho
+        # Primera imagen en el contenedor derecho
         first_image = Image.open("resources/images/firefighter.png")
         self.photo = ImageTk.PhotoImage(first_image)
         self.first_label = tk.Label(self.right_canvas, image = self.photo)
@@ -130,61 +131,72 @@ class mainInterface(tk.Tk):
         restart_button.pack(side=tk.RIGHT, fill="x", expand=True, padx=5)
         restart_button.config(font=('Helvatica', 11))
 
-    def resize_image(self, image, size):
+    def resize_first_image(self, image, size):
         return ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
 
     def right_canvas_resize(self, event):
         # Manejar el evento de redimensionar el Canvas
-        new_size = (self.right_canvas.winfo_width(), round(self.right_canvas.winfo_height() * 0.4))
-        self.photo = self.resize_image(Image.open("resources/images/firefighter.png"), new_size)
+        self.photo = self.resize_first_image(Image.open("resources/images/firefighter.png"), (self.right_canvas.winfo_width(), round(self.right_canvas.winfo_height() * 0.4)))
         self.first_label.config(image=self.photo)
 
     def dibujar_matriz(self, event=None):
 
         # Eliminar dibujos anteriores
         self.canvas_matriz.delete("all")
-
         # Número de filas y columnas en la matriz
         rows = 10
         columns = 10
-
         # Tamaño de cada rectángulo en el Canvas
         rectangle_width = self.canvas_matriz.winfo_width() // columns
-        rentangle_height = self.canvas_matriz.winfo_height() // rows
-        
+        rectangle_height = self.canvas_matriz.winfo_height() // rows
+
         for row in range(rows):
             for column in range(columns):
 
                 # Calcular coordenadas de la celda
                 x1 = column * rectangle_width
-                y1 = row * rentangle_height
+                y1 = row * rectangle_height
                 x2 = x1 + rectangle_width
-                y2 = y1 + rentangle_height
+                y2 = y1 + rectangle_height
+                x_center, y_center = (x1 + x2) // 2, (y1 + y2) // 2
 
                 # Color y texto para el rectángulo
                 texto = ""
-                if matriz[row][column] == 0:
+                if matriz[row][column] == 0: # Casilla libre
                     color = "white"
-                elif matriz[row][column] == 1:
+                elif matriz[row][column] == 1: # Obstáculo
                     color = "#767171"
-                elif matriz[row][column] == 2:
+                elif matriz[row][column] == 2: # Punto de fuego
                     color = "#ED7D31"
-                elif matriz[row][column] == 3:
+                    texto = "F"
+                elif matriz[row][column] == 3: # Cubo de un litro
                     color = "#FF0000"
-                    texto = "1L"
-                elif matriz[row][column] == 4:
+                    texto = "C1L"
+                elif matriz[row][column] == 4: # Cubo de dos litros
                     color = "#FF0000"
-                    texto = "2L"
-                elif matriz[row][column] == 5:
+                    texto = "C2L"
+                elif matriz[row][column] == 5: # Punto de inicio
                     color = "#00B050"
-                elif matriz[row][column] == 6:
+                    texto = "I"
+
+                    # Crear imagen del bombero en el contenedor izquierdo
+                    self.agent_image = ImageTk.PhotoImage(Image.open("resources/images/firefighter_icon.png").resize((round(rectangle_width * 0.8), round(rectangle_height * 0.8)), Image.LANCZOS))
+                    self.label_agent_icon = tk.Label(self.canvas_matriz, image = self.agent_image, width= rectangle_width ** 0.9, height= rectangle_height ** 0.9)
+                    self.label_agent_icon.config(bg="white")
+                    if x1 == 0:
+                        self.label_agent_icon.place(x = x1 + (rectangle_width * 0.16), y = y1 + round(y1 ** 0.38))
+                    else:
+                        self.label_agent_icon.place(x = x1 + round(x1 ** 0.5), y = y1 + round(y1 ** 0.38))
+                    
+                elif matriz[row][column] == 6: # Hidrante
                     color = "#00B0F0"
+                    texto = "H"
 
                 # Dibujar rectángulos en el Canvas
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
-                x_centro, y_centro = (x1 + x2) // 2, (y1 + y2) // 2
-                self.canvas_matriz.create_text(x_centro, y_centro, text=texto, fill="black", font=("Helvetica", 14))
+                self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
 if __name__ == "__main__":
     app = mainInterface()
     app.mainloop()
+    os.system('cls') # Limpia la terminal
