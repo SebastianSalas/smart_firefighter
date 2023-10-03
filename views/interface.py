@@ -42,6 +42,7 @@ class mainInterface(tk.Tk):
         self.canvas_matriz = tk.Canvas(self.left_frame, bg="white", bd=2, relief="solid")
         self.canvas_matriz.pack(expand=True, fill="both")
         self.canvas_matriz.bind("<Configure>", self.dibujar_matriz)
+        print("Mapa generado")
 
         # Canvas en el contenedor derecho
         self.right_canvas = tk.Canvas(self.right_frame, bg="white", bd=2, relief="solid")
@@ -135,9 +136,16 @@ class mainInterface(tk.Tk):
         return ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
 
     def right_canvas_resize(self, event):
-        # Manejar el evento de redimensionar el Canvas
+        # Manejar el evento de redimensionar el Canvas y la imgen
         self.photo = self.resize_first_image(Image.open("resources/images/firefighter.png"), (self.right_canvas.winfo_width(), round(self.right_canvas.winfo_height() * 0.4)))
         self.first_label.config(image=self.photo)
+
+    def agent_movements_event(self):
+        self.bind("<Up>", self.move_up)
+        self.bind("<Down>", self.move_down)
+        self.bind("<Left>", self.move_left)
+        self.bind("<Right>", self.move_right)
+        print("Movimientos generado")
 
     def dibujar_matriz(self, event=None):
 
@@ -150,14 +158,19 @@ class mainInterface(tk.Tk):
         rectangle_width = self.canvas_matriz.winfo_width() // columns
         rectangle_height = self.canvas_matriz.winfo_height() // rows
 
+        # Crear imagen del bombero en el contenedor izquierdo
+        self.agent_image = ImageTk.PhotoImage(Image.open("resources/images/firefighter_icon.png").resize((round(rectangle_width * 0.8), round(rectangle_height * 0.8)), Image.LANCZOS))
+        self.label_agent_icon = tk.Label(self.canvas_matriz, image = self.agent_image, width= rectangle_width ** 0.9, height= rectangle_height ** 0.9)
+        #self.label_agent_icon.config(bg="white", highlightbackground="white", highlightthickness="0")
+
         for row in range(rows):
             for column in range(columns):
 
                 # Calcular coordenadas de la celda
-                x1 = column * rectangle_width
-                y1 = row * rectangle_height
-                x2 = x1 + rectangle_width
-                y2 = y1 + rectangle_height
+                x1 = column * rectangle_width # Esquina superior izquierda 
+                y1 = row * rectangle_height # Esquina superior izquierda
+                x2 = x1 + rectangle_width # Esquina inferior derecha
+                y2 = y1 + rectangle_height # Esquina inferior derecha
                 x_center, y_center = (x1 + x2) // 2, (y1 + y2) // 2
 
                 # Color y texto para el rectángulo
@@ -177,17 +190,15 @@ class mainInterface(tk.Tk):
                     texto = "C2L"
                 elif matriz[row][column] == 5: # Punto de inicio
                     color = "#00B050"
-                    texto = "I"
+                    texto = "PI"
 
-                    # Crear imagen del bombero en el contenedor izquierdo
-                    self.agent_image = ImageTk.PhotoImage(Image.open("resources/images/firefighter_icon.png").resize((round(rectangle_width * 0.8), round(rectangle_height * 0.8)), Image.LANCZOS))
-                    self.label_agent_icon = tk.Label(self.canvas_matriz, image = self.agent_image, width= rectangle_width ** 0.9, height= rectangle_height ** 0.9)
-                    self.label_agent_icon.config(bg="white")
-                    if x1 == 0:
+                    #self.label_agent_icon.config(highlightbackground="white", highlightthickness=0)
+                    if x1 == 0: 
                         self.label_agent_icon.place(x = x1 + (rectangle_width * 0.16), y = y1 + round(y1 ** 0.38))
                     else:
                         self.label_agent_icon.place(x = x1 + round(x1 ** 0.5), y = y1 + round(y1 ** 0.38))
-                    
+                    self.agent_movements_event()
+
                 elif matriz[row][column] == 6: # Hidrante
                     color = "#00B0F0"
                     texto = "H"
@@ -196,7 +207,32 @@ class mainInterface(tk.Tk):
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
                 self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
+    def move_up(self, event):
+        #self.canvas_matriz.coords(self.label_agent_icon, 10, 10)
+        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
+        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
+        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
+        self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() - y)))
+
+    def move_down(self, event):
+        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
+        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
+        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
+        self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() + y)))
+
+    def move_left(self, event):
+        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
+        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
+        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
+        self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() - x)))
+
+    def move_right(self, event):
+        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
+        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
+        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
+        self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() + x)))
+
 if __name__ == "__main__":
     app = mainInterface()
     app.mainloop()
-    os.system('cls') # Limpia la terminal
+    #os.system('cls') # Limpia la terminal
