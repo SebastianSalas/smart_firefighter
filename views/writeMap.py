@@ -1,7 +1,6 @@
 import tkinter as tk
 import numpy as np
-from PIL import Image, ImageTk
-import time
+import algoritmos.amplitud as amplitud
 
 with open("resources/Prueba1.txt", "r") as archivo:
     lineas = archivo.readlines()
@@ -19,7 +18,6 @@ def moverAgente_mapa(self, ruta):
     self.hidratante = 6
     
     self.canvas = tk.Canvas(self, width=600, height=600, bg="white")
-    #self.canvas.create_image()
     self.canvas.place(x=0, y=0)
     
     # Dibujar la matriz en el canvas
@@ -42,3 +40,4 @@ def moverAgente_mapa(self, ruta):
                 self.canvas.create_rectangle(x, y, x+60, y+60, fill="green")
             elif matriz[i][j] == self.hidratante:
                 self.canvas.create_rectangle(x, y, x+60, y+60, fill="cyan")
+      
