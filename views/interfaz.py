@@ -1,7 +1,7 @@
 import tkinter as tk
 import numpy as np
 import time
-from views.writeMap import moverAgente_mapa
+from views.printMap import moverAgente_mapa
 
 
 class Interfaz(tk.Tk):
