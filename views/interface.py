@@ -141,10 +141,10 @@ class mainInterface(tk.Tk):
         self.first_label.config(image=self.photo)
 
     def agent_movements_event(self):
-        self.bind("<Up>", self.move_up)
-        self.bind("<Down>", self.move_down)
-        self.bind("<Left>", self.move_left)
-        self.bind("<Right>", self.move_right)
+        self.bind("<Up>", lambda event: self.agent_movements(event, "<Up>"))
+        self.bind("<Down>", lambda event: self.agent_movements(event, "<Down>"))
+        self.bind("<Left>", lambda event: self.agent_movements(event, "<Left>"))
+        self.bind("<Right>", lambda event: self.agent_movements(event, "<Right>"))
         print("Movimientos generado")
 
     def dibujar_matriz(self, event=None):
@@ -207,30 +207,17 @@ class mainInterface(tk.Tk):
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
                 self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
-    def move_up(self, event):
-        #self.canvas_matriz.coords(self.label_agent_icon, 10, 10)
+    def agent_movements(self, event, movement):
         x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
-        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
-        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
-        self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() - y)))
+        if movement == "<Up>": # Movimiento arriba del agente
+            self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() - y)))
+        elif movement == "<Down>":
+            self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() + y)))
+        elif movement == "<Left>":
+            self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() - x)))
+        elif movement == "<Right>":
+            self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() + x)))
 
-    def move_down(self, event):
-        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
-        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
-        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
-        self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() + y)))
-
-    def move_left(self, event):
-        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
-        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
-        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
-        self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() - x)))
-
-    def move_right(self, event):
-        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
-        #print(f"Las coordenadas de {self.label_agent_icon} son: x={x}, y={y}")
-        #print(x, round(abs(self.label_agent_icon.winfo_height() - y)))
-        self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() + x)))
 
 if __name__ == "__main__":
     app = mainInterface()
