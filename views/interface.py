@@ -136,7 +136,7 @@ class mainInterface(tk.Tk):
         return ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
 
     def right_canvas_resize(self, event):
-        # Manejar el evento de redimensionar el Canvas y la imgen
+        # Manejar el evento de redimensionar el Canvas y la imagen
         self.photo = self.resize_first_image(Image.open("resources/images/firefighter.png"), (self.right_canvas.winfo_width(), round(self.right_canvas.winfo_height() * 0.4)))
         self.first_label.config(image=self.photo)
 
@@ -145,9 +145,8 @@ class mainInterface(tk.Tk):
         self.bind("<Down>", lambda event: self.agent_movements(event, "<Down>"))
         self.bind("<Left>", lambda event: self.agent_movements(event, "<Left>"))
         self.bind("<Right>", lambda event: self.agent_movements(event, "<Right>"))
-        print("Movimientos generado")
 
-    def dibujar_matriz(self, event=None):
+    def dibujar_matriz(self, event):
 
         # Eliminar dibujos anteriores
         self.canvas_matriz.delete("all")
@@ -208,15 +207,23 @@ class mainInterface(tk.Tk):
                 self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
     def agent_movements(self, event, movement):
-        x, y = map(int, self.label_agent_icon.winfo_geometry().split('+')[1:])
-        if movement == "<Up>": # Movimiento arriba del agente
-            self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() - y)))
+        x = int(self.label_agent_icon.place_info()['x'])
+        y = int(self.label_agent_icon.place_info()['y'])
+
+        rectangle_width = self.canvas_matriz.winfo_width() // len(matriz[0])
+        rectangle_height = self.canvas_matriz.winfo_height() // len(matriz)
+
+        if movement == "<Up>":  # Movimiento arriba del agente
+            y -= rectangle_height
         elif movement == "<Down>":
-            self.label_agent_icon.place(y = round(abs(self.label_agent_icon.winfo_height() + y)))
+            y += rectangle_height
         elif movement == "<Left>":
-            self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() - x)))
+            x -= rectangle_width
         elif movement == "<Right>":
-            self.label_agent_icon.place(x = round(abs(self.label_agent_icon.winfo_width() + x)))
+            x += rectangle_width
+
+        # Asignar los nuevos valores
+        self.label_agent_icon.place(x=x, y=y)
 
 
 if __name__ == "__main__":
