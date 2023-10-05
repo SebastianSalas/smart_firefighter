@@ -21,7 +21,7 @@ class mainInterface(tk.Tk):
         # Calcular las dimensiones y posición de la ventana
         windowWidth, windowHeight = round(screen_width / 2), round(screen_height / 2)
         x, y = round((screen_width - windowWidth) / 2), round((screen_height - windowHeight) / 2) 
-        self.geometry(f"{900}x{600}+{x}+{y}")
+        self.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
         
         # Propiedades de la ventana
         self.config(bg="white")
@@ -42,7 +42,6 @@ class mainInterface(tk.Tk):
         self.canvas_matriz = tk.Canvas(self.left_frame, bg="white", bd=2, relief="solid")
         self.canvas_matriz.pack(expand=True, fill="both")
         self.canvas_matriz.bind("<Configure>", self.dibujar_matriz)
-        print("Mapa generado")
 
         # Canvas en el contenedor derecho
         self.right_canvas = tk.Canvas(self.right_frame, bg="white", bd=2, relief="solid")
@@ -160,7 +159,7 @@ class mainInterface(tk.Tk):
         # Crear imagen del bombero en el contenedor izquierdo
         self.agent_image = ImageTk.PhotoImage(Image.open("resources/images/firefighter_icon.png").resize((round(rectangle_width * 0.8), round(rectangle_height * 0.8)), Image.LANCZOS))
         self.label_agent_icon = tk.Label(self.canvas_matriz, image = self.agent_image, width= rectangle_width ** 0.9, height= rectangle_height ** 0.9)
-        #self.label_agent_icon.config(bg="white", highlightbackground="white", highlightthickness="0")
+        self.label_agent_icon.config(highlightbackground="white", highlightthickness="0")
 
         for row in range(rows):
             for column in range(columns):
@@ -191,13 +190,16 @@ class mainInterface(tk.Tk):
                     color = "#00B050"
                     texto = "PI"
 
-                    #self.label_agent_icon.config(highlightbackground="white", highlightthickness=0)
-                    if x1 == 0: 
-                        self.label_agent_icon.place(x = x1 + (rectangle_width * 0.16), y = y1 + round(y1 ** 0.38))
-                    else:
-                        self.label_agent_icon.place(x = x1 + round(x1 ** 0.5), y = y1 + round(y1 ** 0.38))
-                    self.agent_movements_event()
+                    if (x1 == 0 and y1 != 0): # Posición cuando X=0 y Y!=0
+                        self.label_agent_icon.place(x = x1 + (rectangle_width * 0.15), y = y1 + round(y1 ** 0.35))
+                    elif (x1 != 0 and y1 == 0): # Posición cuando X!=0 y Y=0
+                        self.label_agent_icon.place(x = x1 + (rectangle_width * 0.15), y = y1 + round(rectangle_height ** 0.55))
+                    elif (x1 == 0 and y1 == 0): # Posición cuando X=0 y Y=0
+                        self.label_agent_icon.place(x=x1 + (rectangle_width * 0.15), y=y1 + round(rectangle_height ** 0.55))
+                    else: # Posición en cualquier otro caso
+                        self.label_agent_icon.place(x=x1 + round(x1 ** 0.35), y=y1 + round(y1 ** 0.35))
 
+                    self.agent_movements_event()
                 elif matriz[row][column] == 6: # Hidrante
                     color = "#00B0F0"
                     texto = "H"
@@ -207,15 +209,14 @@ class mainInterface(tk.Tk):
                 self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
     def agent_movements(self, event, movement):
-        x = int(self.label_agent_icon.place_info()['x'])
-        y = int(self.label_agent_icon.place_info()['y'])
 
-        rectangle_width = self.canvas_matriz.winfo_width() // len(matriz[0])
-        rectangle_height = self.canvas_matriz.winfo_height() // len(matriz)
+        # 
+        x, y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
+        rectangle_width, rectangle_height = self.canvas_matriz.winfo_width() // len(matriz[0]), self.canvas_matriz.winfo_height() // len(matriz)
 
-        if movement == "<Up>":  # Movimiento arriba del agente
+        if movement == "<Up>":  # Movimiento hacia arriba del agente
             y -= rectangle_height
-        elif movement == "<Down>":
+        elif movement == "<Down>": # Movimiento hacia abajo del agente
             y += rectangle_height
         elif movement == "<Left>":
             x -= rectangle_width
