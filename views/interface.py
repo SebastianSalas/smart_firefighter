@@ -21,7 +21,7 @@ class mainInterface(tk.Tk):
         # Calcular las dimensiones y posición de la ventana
         windowWidth, windowHeight = round(screen_width / 2), round(screen_height / 2)
         x, y = round((screen_width - windowWidth) / 2), round((screen_height - windowHeight) / 2) 
-        self.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
+        self.geometry(f"{900}x{600}+{x}+{y}")
         
         # Propiedades de la ventana
         self.config(bg="white")
