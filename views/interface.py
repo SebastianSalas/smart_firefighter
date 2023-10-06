@@ -118,18 +118,27 @@ class mainInterface(tk.Tk):
         selected_search.trace_add("write", search)
 
         # Crear un frame para contener los botones
-        self.button_frame = tk.Frame(self.right_canvas, bg="white")
-        self.button_frame.pack(side=tk.BOTTOM, fill="x", padx=10, pady=10)
+        self.buttons_frame = tk.Frame(self.right_canvas, bg="white")
+        self.buttons_frame.pack(side=tk.BOTTOM, fill="x", padx=10, pady=10)
 
         # Botón de inicio del algoritmo
-        start_button = tk.Button(self.button_frame, text="Iniciar", bg="indianred", fg="black")
-        start_button.pack(side=tk.LEFT, fill="x", expand=True, padx=5)
-        start_button.config(font=('Helvatica', 11))
+        start_button = tk.Button(self.buttons_frame, text="Iniciar", bg="indianred", fg="black")
+        start_button.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+        start_button.config(font=('Helvetica', 11))
 
         # Botón de reiniciar
-        restart_button = tk.Button(self.button_frame, text="Reiniciar", bg="indianred", fg="black")
-        restart_button.pack(side=tk.RIGHT, fill="x", expand=True, padx=5)
-        restart_button.config(font=('Helvatica', 11))
+        restart_button = tk.Button(self.buttons_frame, text="Reiniciar", bg="indianred", fg="black")
+        restart_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        restart_button.config(font=('Helvetica', 11))
+
+        # Botón de créditos
+        credits_button = tk.Button(self.buttons_frame, text="Créditos", bg="indianred", fg="black")
+        credits_button.grid(row=1, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+        credits_button.config(font=('Helvetica', 11))
+
+        # Distribuir uniformemente el espacio en X entre los botones
+        self.buttons_frame.columnconfigure(0, weight=1)
+        self.buttons_frame.columnconfigure(1, weight=1)
 
     def resize_first_image(self, image, size):
         return ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
