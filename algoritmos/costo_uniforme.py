@@ -95,17 +95,12 @@ class costo_uniforme():
         tipo_celda = map[position_x][position_y]
         cost = costo_general
 
-        if tipo_celda == 3:  # freezer
-            cost += cubeta_un_litro if node.seeds == 0 else costo_general
-        elif tipo_celda == 4:  # cell
-            cost += cubeta_dos_litro if node.seeds == 0 else costo_general
+        if tipo_celda == 3:  # cubeta de un litro
+            cost += cubeta_un_litro if node.cubetas == 0 else costo_general
+        elif tipo_celda == 4:  # cubeta de dos litros
+            cost += cubeta_dos_litro if node.cubetas == 0 else costo_general
 
         map[position_x][position_y] = 0
-        child = Nodo(node, (position_x, position_y), map, node.seeds, node.spheres, node.cost + cost)
-
-        if tipo_celda == 5:  # seed
-            child.seeds += 1
-        elif tipo_celda == 6:  # sphere
-            child.spheres += 1
+        child = Nodo(node, (position_x, position_y), map, node.cubetas, node.punto_fuego, node.cost + cost)
 
         return child
