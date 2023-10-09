@@ -131,8 +131,22 @@ class mainInterface(tk.Tk):
         restart_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         restart_button.config(font=('Helvetica', 11))
 
+        # Crear ventana con los créditos
+        def credits():
+            credits_window = tk.Toplevel(self)
+            credits_window.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
+            credits_window.geometry(f"{windowWidth}x{windowHeight}+{x}+{y}")
+            credits_window.config(bg="indianred")
+
+            # Etiqueta para mostrar los créditos
+            credits_label = tk.Label(credits_window, text="HECHO POR:\n\nDIEGO FERNANDO VICTORIA - 202125877\nDIEGO.VICTORIA@CORREOUNIVALLE.EDU.CO\n\nJANIERT SEBASTIÁN SALAS - 201941265\nJANIERT.SALAS@CORREOUNIVALLE.EDU.CO\n\nJHON ALEXANDER VALENCIA - 202042426\nJHON.HILAMO@CORREOUNIVALLE.EDU.CO")
+            credits_label.config(font=('Helvetica', 10), bg="white")
+            credits_label.place(relx=0.5, rely=0.5, anchor="center")
+            credits_window.transient(self)
+            credits_window.wait_window()
+
         # Botón de créditos
-        credits_button = tk.Button(self.buttons_frame, text="Créditos", bg="indianred", fg="black")
+        credits_button = tk.Button(self.buttons_frame, text="Créditos", bg="indianred", fg="black", command=credits)
         credits_button.grid(row=1, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
         credits_button.config(font=('Helvetica', 11))
 
