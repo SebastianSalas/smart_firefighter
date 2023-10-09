@@ -126,8 +126,13 @@ class mainInterface(tk.Tk):
         start_button.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
         start_button.config(font=('Helvetica', 11))
 
+        # Función para reiniciar la selección del tipo de búsqueda
+        def restart():
+            selected_search.set(search_options[0])
+            self.selected_algorithm.set("")
+
         # Botón de reiniciar
-        restart_button = tk.Button(self.buttons_frame, text="Reiniciar", bg="indianred", fg="black")
+        restart_button = tk.Button(self.buttons_frame, text="Reiniciar", bg="indianred", fg="black", command=restart)
         restart_button.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         restart_button.config(font=('Helvetica', 11))
 
@@ -241,9 +246,9 @@ class mainInterface(tk.Tk):
             y -= rectangle_height
         elif movement == "<Down>": # Movimiento hacia abajo del agente
             y += rectangle_height
-        elif movement == "<Left>":
+        elif movement == "<Left>": # Movimiento hacia la izquierda del agente
             x -= rectangle_width
-        elif movement == "<Right>":
+        elif movement == "<Right>": # Movimiento hacia la derecha del agente
             x += rectangle_width
 
         # Asignar los nuevos valores
