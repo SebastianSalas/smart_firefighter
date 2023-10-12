@@ -17,6 +17,7 @@ class Node():
         self.cost = cost
   
 def verificarCaminoMapa(nodo, map):
+  print(nodo + 0 <= nodo[0] < map.shape[0] and 0 <= nodo[1] < map.shape[1] and map[nodo[0], nodo[1]] != 1)
   return 0 <= nodo[0] < map.shape[0] and 0 <= nodo[1] < map.shape[1] and map[nodo[0], nodo[1]] != 1
 
 def checkParent(nodo, operator):
@@ -50,58 +51,78 @@ def checkParent(nodo, operator):
         return True
   
     
-def retornarHijos(nodo, map, nodos_e):
-  lista_hijos=[]
+def checkMovimiento(nodo, map, nodos_e):
+  child_list=[]
+  pos_x = nodo.position[0]
+  pos_y = nodo.position[1]
   nodos_expandidos = nodos_e
   #up
   if verificarCaminoMapa([nodo.position[0]-1, nodo.position[1]], map) and checkParent(nodo, 0):
-    lista_hijos.append(Node(nodo, 0, [nodo.position[0]-1, nodo.position[1]], nodo.map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q))
-    nodos_expandidos +=1
+    pos_x = nodo.position[0]-1
+    pos_y = nodo.position[1]
+    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
+    child_list.append(child)
     
   #down
   if verificarCaminoMapa([nodo.position[0]+1, nodo.position[1]], map) and checkParent(nodo, 1):
-    lista_hijos.append(Node(nodo, 0, [nodo.position[0]+1, nodo.position[1]], nodo.map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q))
-    nodos_expandidos +=1
+    pos_x = nodo.position[0]+1
+    pos_y = nodo.position[1]
+    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
+    child_list.append(child)
     
+  #right
   if verificarCaminoMapa([nodo.position[0], nodo.position[1]+1], map) and checkParent(nodo, 2):
-    lista_hijos.append(Node(nodo, 0, [nodo.position[0], nodo.position[1]+1], nodo.map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q))
-    nodos_expandidos +=1
+    pos_x = nodo.position[0]
+    pos_y = nodo.position[1]+1
+    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
+    child_list.append(child)
     
+  #left
   if verificarCaminoMapa([nodo.position[0], nodo.position[1]-1], map) and checkParent(nodo, 3):
-    lista_hijos.append(Node(nodo, 0, [nodo.position[0], nodo.position[1]-1], nodo.map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q))
-    nodos_expandidos +=1
-    
-  return lista_hijos, nodos_expandidos
+    pos_x = nodo.position[0]
+    pos_y = nodo.position[1]-1
+    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
+    child_list.append(child)
 
-def verificarMeta(nodo,copyMap):
+  print(f"lista_hijos: {child_list}")
+  return child_list, nodos_expandidos      
+    
+
+def verificarMeta(nodo,copyMap, pos_x, pos_y, nodos_e):
+  nodos_expandidos = nodos_e
   if copyMap[nodo.position[0], nodo.position[1]] == 3:
     print("Coge el cubo 1L")
     copyMap = np.where(np.logical_or(copyMap == 3, copyMap == 4), 0, copyMap)
-    nodo.bucket1 = True
+    node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, True, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
   elif copyMap[nodo.position[0], nodo.position[1]] == 4:
     print("Coge cubo de 2L")
     copyMap = np.where(np.logical_or(copyMap == 3, copyMap == 4), 0, copyMap)
-    nodo.bucket2 = True
+    node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, True, nodo.fire_extinguished, nodo.water_q)
   elif copyMap[nodo.position[0], nodo.position[1]] == 2:
     if(nodo.bucket1 and nodo.water_q):
       print("Apaga fuego")
-      nodo.fire_extinguished += 1
-      nodo.water_q -= 1
       copyMap[nodo.position[0], nodo.position[1]] = 0
+      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1)
+
     elif(nodo.bucket2 and nodo.water_q):
       print("Apaga fuego")
-      nodo.fire_extinguished += 1
-      nodo.water_q -= 1
       copyMap[nodo.position[0], nodo.position[1]] = 0
+      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1)
+
   elif copyMap[nodo.position[0], nodo.position[1]] == 6:
       if(nodo.bucket1 and nodo.water_q == 0):
         print("Llena agua 1L")
-        nodo.water_q += 1
+        node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
+  
       elif(nodo.bucket2 and nodo.water_q == 0):
         print("Llena agua 2L")
-        nodo.water_q += 2
+        node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
+  else:
+    print("Sigue el camino")
+    node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
   #print(nodo.position)
-  return copyMap  
+  
+  return node_child, nodos_expandidos  
     
 
 def solve(map):
@@ -132,8 +153,7 @@ def solve(map):
     else:
       #print(f"Cola {cola}")
       #print(nodo_actual.position)
-      mapa_actual = verificarMeta(nodo_actual,mapa_actual)
-      nodos_hijos, nodos_expandidos = retornarHijos(nodo_actual, mapa_actual, nodos_expandidos)
+      nodos_hijos, nodos_expandidos = checkMovimiento(nodo_actual, mapa_actual, nodos_expandidos)
       cola.extend(nodos_hijos)
   print(f"nodos expandidos: {nodos_expandidos}")
       
