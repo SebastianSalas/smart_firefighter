@@ -130,6 +130,7 @@ class mainInterface(tk.Tk):
         def restart():
             selected_search.set(search_options[0])
             self.selected_algorithm.set("")
+            self.dibujar_matriz(any)
 
         # Botón de reiniciar
         restart_button = tk.Button(self.buttons_frame, text="Reiniciar", bg="indianred", fg="black", command=restart)
@@ -177,6 +178,7 @@ class mainInterface(tk.Tk):
 
         # Eliminar dibujos anteriores
         self.canvas_matriz.delete("all")
+        if hasattr(self, 'label_agent_icon') and self.label_agent_icon:self.label_agent_icon.destroy()
         # Número de filas y columnas en la matriz
         rows = 10
         columns = 10
