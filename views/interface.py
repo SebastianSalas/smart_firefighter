@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 import numpy as np
+import amplitud as amplitud
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -121,8 +122,20 @@ class mainInterface(tk.Tk):
         self.buttons_frame = tk.Frame(self.right_canvas, bg="white")
         self.buttons_frame.pack(side=tk.BOTTOM, fill="x", padx=10, pady=10)
 
+        # Función de inicio del algoritmo
+        def start_algorithm():
+            with open("resources/map.txt", "r") as file:
+                file_map = file.readlines()
+
+                map_array = np.array([list(map(int, n.split(' '))) for n in file_map])
+                expanded_nodes, path, depth = amplitud.solve(map_array)
+                
+                print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
+            
+            self.agent_movements(path)
+
         # Botón de inicio del algoritmo
-        start_button = tk.Button(self.buttons_frame, text="Iniciar", bg="indianred", fg="black")
+        start_button = tk.Button(self.buttons_frame, text="Iniciar", bg="indianred", fg="black", command=start_algorithm)
         start_button.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
         start_button.config(font=('Helvetica', 11))
 
@@ -167,12 +180,6 @@ class mainInterface(tk.Tk):
         # Manejar el evento de redimensionar el Canvas y la imagen
         self.photo = self.resize_first_image(Image.open("resources/images/firefighter.png"), (self.right_canvas.winfo_width(), round(self.right_canvas.winfo_height() * 0.4)))
         self.first_label.config(image=self.photo)
-
-    def agent_movements_event(self):
-        self.bind("<Up>", lambda event: self.agent_movements(event, "<Up>"))
-        self.bind("<Down>", lambda event: self.agent_movements(event, "<Down>"))
-        self.bind("<Left>", lambda event: self.agent_movements(event, "<Left>"))
-        self.bind("<Right>", lambda event: self.agent_movements(event, "<Right>"))
 
     def dibujar_matriz(self, event):
 
@@ -229,7 +236,6 @@ class mainInterface(tk.Tk):
                     else: # Posición en cualquier otro caso
                         self.label_agent_icon.place(x=x1 + round(x1 ** 0.35), y=y1 + round(y1 ** 0.35))
 
-                    self.agent_movements_event()
                 elif matriz[row][column] == 6: # Hidrante
                     color = "#00B0F0"
                     texto = "H"
@@ -238,23 +244,32 @@ class mainInterface(tk.Tk):
                 self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
                 self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
 
-    def agent_movements(self, event, movement):
+    def agent_movements(self, movements):
 
         # 
         x, y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
         rectangle_width, rectangle_height = self.canvas_matriz.winfo_width() // len(matriz[0]), self.canvas_matriz.winfo_height() // len(matriz)
+        print("Se ejecutó")
+        def move_agent(index):
+            nonlocal x, y
+            if index < len(movements):
+                if movements[index] == 0:  # Movimiento hacia arriba del agente
+                    y -= rectangle_height
+                elif movements[index] == 1: # Movimiento hacia abajo del agente
+                    y += rectangle_height
+                elif movements[index] == 3: # Movimiento hacia la izquierda del agente
+                    x -= rectangle_width
+                elif movements[index] == 2: # Movimiento hacia la derecha del agente
+                    x += rectangle_width
 
-        if movement == "<Up>":  # Movimiento hacia arriba del agente
-            y -= rectangle_height
-        elif movement == "<Down>": # Movimiento hacia abajo del agente
-            y += rectangle_height
-        elif movement == "<Left>": # Movimiento hacia la izquierda del agente
-            x -= rectangle_width
-        elif movement == "<Right>": # Movimiento hacia la derecha del agente
-            x += rectangle_width
+                # Asignar los nuevos valores
+                self.label_agent_icon.place(x=x, y=y)
 
-        # Asignar los nuevos valores
-        self.label_agent_icon.place(x=x, y=y)
+                # Pausa de 1 segundo (1000 milisegundos) entre cada movimiento
+                self.after(500, move_agent, index + 1)
+
+        # Iniciar la secuencia de movimientos desde el índice 1 para evitar el none
+        move_agent(1)
 
 
 if __name__ == "__main__":
