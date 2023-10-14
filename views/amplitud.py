@@ -2,9 +2,6 @@ from collections import deque
 import numpy as np
 
 class Node():
-    '''
-    Clase que define un nodo.
-    '''
     def __init__(self, parent, operator, position, map, bucket1, bucket2, fire_extinguished, water_q, cost=0):
       self.parent = parent
       self.operator = operator
@@ -16,10 +13,8 @@ class Node():
       self.water_q = water_q
       self.cost = cost
       
-    def update_fire_extinguished(self):
-      self.fire_extinguished += 1
   
-def verificarCaminoMapa(nodo, map):
+def verifyMap(nodo, map):
   return 0 <= nodo[0] < map.shape[0] and 0 <= nodo[1] < map.shape[1] and map[nodo[0], nodo[1]] != 1
 
 def checkParent(nodo, operator):
@@ -54,108 +49,89 @@ def checkParent(nodo, operator):
   return True
   
     
-def checkMovimiento(nodo, map, nodos_e):
+def checkMovimiento(nodo, nodos_e):
   child_list=[]
   pos_x = nodo.position[0]
   pos_y = nodo.position[1]
-  nodos_expandidos = nodos_e
+  expanded_nodes = nodos_e
   #up
-  if verificarCaminoMapa([nodo.position[0]-1, nodo.position[1]], map) and checkParent(nodo, 0):
+  if verifyMap([nodo.position[0]-1, nodo.position[1]], nodo.map) and checkParent(nodo, 0):
     pos_x = nodo.position[0]-1
     pos_y = nodo.position[1]
-    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
-    print(f"fuego_child: {child.fire_extinguished}")
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 0)
     child_list.append(child)
     
   #down
-  if verificarCaminoMapa([nodo.position[0]+1, nodo.position[1]], map) and checkParent(nodo, 1):
+  if verifyMap([nodo.position[0]+1, nodo.position[1]], nodo.map) and checkParent(nodo, 1):
     pos_x = nodo.position[0]+1
     pos_y = nodo.position[1]
-    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
-    print(f"fuego_child: {child.fire_extinguished}")
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 1)
     child_list.append(child)
     
   #right
-  if verificarCaminoMapa([nodo.position[0], nodo.position[1]+1], map) and checkParent(nodo, 2):
+  if verifyMap([nodo.position[0], nodo.position[1]+1], nodo.map) and checkParent(nodo, 2):
     pos_x = nodo.position[0]
     pos_y = nodo.position[1]+1
-    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
-    print(f"fuego_child: {child.fire_extinguished}")
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 2)
     child_list.append(child)
     
   #left
-  if verificarCaminoMapa([nodo.position[0], nodo.position[1]-1], map) and checkParent(nodo, 3):
+  if verifyMap([nodo.position[0], nodo.position[1]-1], nodo.map) and checkParent(nodo, 3):
     pos_x = nodo.position[0]
     pos_y = nodo.position[1]-1
-    child, nodos_expandidos = verificarMeta(nodo, map, pos_x, pos_y, nodos_e)
-    print(f"fuego_child: {child.fire_extinguished}")
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 3)
     child_list.append(child)
 
-  return child_list, nodos_expandidos      
+  return child_list, expanded_nodes      
     
 
-def verificarMeta(nodo, copyMap, pos_x, pos_y, nodos_e):
-  nodos_expandidos = nodos_e
-  if copyMap[nodo.position[0], nodo.position[1]] == 3:
-    #print(f"Coge el cubo 1L {nodo.position}")
-    new_map = np.where(np.logical_or(copyMap == 3, copyMap == 4), 0, copyMap)
-    node_child = Node(nodo, 0, [pos_x, pos_y], new_map, True, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
-    nodos_expandidos += 1
-  elif copyMap[nodo.position[0], nodo.position[1]] == 4:
-    #print(f"Coge cubo de 2L {nodo.position}")
-    new_map = np.where(np.logical_or(copyMap == 3, copyMap == 4), 0, copyMap)
-    node_child = Node(nodo, 0, [pos_x, pos_y], new_map, nodo.bucket1, True, nodo.fire_extinguished, nodo.water_q)
-    nodos_expandidos += 1
-  elif copyMap[nodo.position[0], nodo.position[1]] == 2:
-    if nodo.bucket1 and nodo.water_q > 0:
-      #print(f"Apaga fuego {nodo.position}")
-      copyMap[nodo.position[0], nodo.position[1]] = 0
-      nodo.update_fire_extinguished()
-      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q - 1)
-      #print(f"FUEGOOOOOOOOOOOOOOOOOOOO: {node_child.fire_extinguished}")
-      print(f"cubo1l: {nodo.bucket1}, cubo2l: {nodo.bucket2}, fuegos: {nodo.fire_extinguished}, matriz_nuev: {copyMap}")
-      nodos_expandidos += 1
-    elif nodo.bucket2 and nodo.water_q > 0:
-      #print(f"Apaga fuego {nodo.position}")
-      copyMap[nodo.position[0], nodo.position[1]] = 0
-      nodo.update_fire_extinguished()
-      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q - 1)
-      #print(f"FUEGOOOOOOOOOOOOOOOOOOOO: {node_child.fire_extinguished}")
-      print(f"cubo1l: {nodo.bucket1}, cubo2l: {nodo.bucket2}, fuegos: {nodo.fire_extinguished}, matriz_nuev: {copyMap}")
-      nodos_expandidos += 1
+def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
+  expanded_nodes = nodos_e
+  water_temp = nodo.water_q
+  nodo_map = (nodo.map).copy()
+  if nodo_map[nodo.position[0], nodo.position[1]] == 3: #1l
+    new_map = np.where(np.logical_or(nodo_map == 3, nodo_map == 4), 0, nodo_map)
+    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, True, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
+    expanded_nodes += 1
+  elif nodo_map[nodo.position[0], nodo.position[1]] == 4: #2l
+    new_map = np.where(np.logical_or(nodo_map == 3, nodo_map == 4), 0, nodo_map)
+    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, nodo.bucket1, True, nodo.fire_extinguished, nodo.water_q)
+    expanded_nodes += 1
+  elif nodo_map[nodo.position[0], nodo.position[1]] == 2: #fire
+    if nodo.bucket1 and water_temp > 0: 
+      nodo_map[nodo.position[0], nodo.position[1]] = 0
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1)
+      expanded_nodes += 1
+    elif nodo.bucket2 and water_temp > 0:
+      nodo_map[nodo.position[0], nodo.position[1]] = 0
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1)
+      expanded_nodes += 1
     else:
-      #print(f"Sigue el camino {nodo.position}")
-      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
-      nodos_expandidos += 1
-  elif copyMap[nodo.position[0], nodo.position[1]] == 6:
-    #print(f"cubeta 1l: {nodo.bucket1}, cubeta 2l: {nodo.bucket2},")
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
+      expanded_nodes += 1
+  elif nodo_map[nodo.position[0], nodo.position[1]] == 6: #water
     if nodo.bucket1 and nodo.water_q == 0:
-        #print(f"Llena agua 1L {nodo.position}")
-        node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
-        nodos_expandidos += 1
+        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
+        expanded_nodes += 1
     elif nodo.bucket2 and nodo.water_q == 0:
-        #print(f"Llena agua 2L {nodo.position}")
-        node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
-        nodos_expandidos += 1
+        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1)
+        expanded_nodes += 1
     else:
-      #print(f"Sigue el camino {nodo.position}")
-      node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
-      nodos_expandidos += 1
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
+      expanded_nodes += 1
   else:
-    #print(f"Sigue el camino {nodo.position}")
-    node_child = Node(nodo, 0, [pos_x, pos_y], copyMap, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
-    nodos_expandidos += 1
+    node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q)
+    expanded_nodes += 1
     
-  return node_child, nodos_expandidos
+  return node_child, expanded_nodes
 
     
 
 def solve(map):
-  cola = deque()
-  nodos_hijos = []
-  mapa_actual = map.copy()
+  queue = deque()
+  children_nodes = []
   finished = False
-  nodos_expandidos = 0
+  expanded_nodes = 0
   pos_i = []
  
   
@@ -165,31 +141,27 @@ def solve(map):
         if(map[i][j] == 5):
           pos_i= [i,j]
           
-  nodo_i = Node(None, None, pos_i, mapa_actual, False, False, 0, 0)
-  cola.append(nodo_i)
+  nodo_i = Node(None, None, pos_i, map, False, False, 0, 0)
+  queue.append(nodo_i)
   
   while not finished:
-    nodo_actual = cola.popleft()
-    #print(nodo_actual.fire_extinguished)
-    if nodo_actual.fire_extinguished == 2:
+    current_node = queue.popleft()
+    if current_node.fire_extinguished == 2:
       finished = True
     else:
-      #print(f"Cola {cola}")
-      #print(nodo_actual.position)
-      nodos_hijos, nodos_expandidos = checkMovimiento(nodo_actual, nodo_actual.map, nodos_expandidos)
-      cola.extend(nodos_hijos)
-  print(f"nodos actual: {nodo_actual.position}")
+      children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
+      queue.extend(children_nodes)
   
   path = []
-  while nodo_actual.parent is not None:
-      path.append(nodo_actual.position) 
-      nodo_actual = nodo_actual.parent  
+  while current_node.parent is not None:
+      path.append(current_node.operator) 
+      current_node = current_node.parent  
 
-  path.append(nodo_actual.position)
+  path.append(current_node.operator)
 
   path = path[::-1]
 
-  print(path)
+  return expanded_nodes, path
 
 
       
