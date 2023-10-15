@@ -131,10 +131,10 @@ def solve(map):
           
   nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0)
   queue.append(nodo_i)
-  
+  count_fire = np.count_nonzero(map == 2)
   while not finished:
     current_node = queue.popleft()
-    if current_node.fire_extinguished == 2:
+    if current_node.fire_extinguished == count_fire:
       finished = True
     else:
       children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
