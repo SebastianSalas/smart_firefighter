@@ -1,4 +1,5 @@
 import os
+import uuid
 import tkinter as tk
 import numpy as np
 import amplitud as amplitud
@@ -29,6 +30,7 @@ class mainInterface(tk.Tk):
     self.config(bg="white")
     self.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
     self.resizable(True, True)
+    self.image_dict = {}
 
     # Crear el contenedor izquierdo
     self.left_frame = tk.Frame(self, padx=10, pady=10, bg="white")
@@ -233,24 +235,21 @@ class mainInterface(tk.Tk):
         x_center, y_center = (x1 + x2) // 2, (y1 + y2) // 2
 
         # Color y texto para el rectángulo
-        texto = ""
+        color = "white"
+        image_path = None
         if matriz[row][column] == 0: # Casilla libre
-          color = "white"
+          pass
         elif matriz[row][column] == 1: # Obstáculo
           color = "#767171"
         elif matriz[row][column] == 2: # Punto de fuego
-          color = "#ED7D31"
-          texto = "F"
+          image_path = "resources/images/burning_house.png"
         elif matriz[row][column] == 3: # Cubo de un litro
-          color = "#FF0000"
-          texto = "C1L"
+          image_path = "resources/images/water_cube.png"
         elif matriz[row][column] == 4: # Cubo de dos litros
-          color = "#FF0000"
-          texto = "C2L"
+          image_path = "resources/images/water_cube.png"
         elif matriz[row][column] == 5: # Punto de inicio
-          color = "#00B050"
-          texto = "PI"
-
+          image_path = "resources/images/fire_truck.png"
+          
           if (x1 == 0 and y1 != 0): # Posición cuando X=0 y Y!=0
             self.label_agent_icon.place(x = x1 + (rectangle_width * 0.15), y = y1 + round(y1 ** 0.35))
           elif (x1 != 0 and y1 == 0): # Posición cuando X!=0 y Y=0
@@ -261,23 +260,25 @@ class mainInterface(tk.Tk):
             self.label_agent_icon.place(x=x1 + round(x1 ** 0.35), y=y1 + round(y1 ** 0.35))
 
         elif matriz[row][column] == 6: # Hidrante
-          color = "#00B0F0"
-          texto = "H"
-
+          image_path = "resources/images/hydrant.png"
         elif matriz[row][column] == 7: # Fuego apagado
-          color = "#6E7B8B"
-          texto = "FA"
+          image_path = "resources/images/house.png"
 
         # Dibujar rectángulos en el Canvas
         self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
-        self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
+
+        if image_path:
+          unique_id = str(uuid.uuid4())  # Generar un identificador único
+          image = ImageTk.PhotoImage(Image.open(image_path).resize((round(rectangle_width * 0.9), round(rectangle_height * 0.9)), Image.LANCZOS))
+          self.image_dict[unique_id] = image  # Almacenar la imagen en el diccionario
+          self.canvas_matriz.create_image(x_center, y_center, anchor=tk.CENTER, image=image)
 
   def agent_movements(self, movements):
 
+    # Ubicaciones de los puntos de fuego
     fire_positions = [(row, column) for row in range(len(matriz)) for column in range(len(matriz[0])) if matriz[row][column] == 2]
-    print(f"Fuegos: {fire_positions}")
+    # Ubicaciones de los cubos de agua
     cube_positions = [(row, column) for row in range(len(matriz)) for column in range(len(matriz[0])) if matriz[row][column] == 3 or matriz[row][column] == 4]
-    print(f"Cubos: {cube_positions}")
 
     # Cálculo de posición del agente y longitud movimientos
     agent_x, agent_y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
