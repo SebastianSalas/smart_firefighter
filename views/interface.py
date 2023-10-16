@@ -265,7 +265,7 @@ class mainInterface(tk.Tk):
           texto = "H"
 
         elif matriz[row][column] == 7: # Fuego apagado
-          color = "#00B0F0"
+          color = "#6E7B8B"
           texto = "FA"
 
         # Dibujar rectángulos en el Canvas
@@ -275,6 +275,9 @@ class mainInterface(tk.Tk):
   def agent_movements(self, movements):
 
     fire_positions = [(row, column) for row in range(len(matriz)) for column in range(len(matriz[0])) if matriz[row][column] == 2]
+    print(f"Fuegos: {fire_positions}")
+    cube_positions = [(row, column) for row in range(len(matriz)) for column in range(len(matriz[0])) if matriz[row][column] == 3 or matriz[row][column] == 4]
+    print(f"Cubos: {cube_positions}")
 
     # Cálculo de posición del agente y longitud movimientos
     agent_x, agent_y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
@@ -294,17 +297,26 @@ class mainInterface(tk.Tk):
 
         # Verificar si el agente pasa sobre un fuego
         if (agent_y // rectangle_height, agent_x // rectangle_width) in fire_positions:
-            # Actualizar la matriz y reflejar los cambios en el Canvas
-            matriz[agent_y // rectangle_height][agent_x // rectangle_width] = 7  # Cambia el fuego a casilla libre
-            self.dibujar_matriz(None)  # Vuelve a dibujar la matriz en el Canvas
-            
+          # Actualizar la matriz y reflejar los cambios en el Canvas
+          matriz[agent_y // rectangle_height][agent_x // rectangle_width] = 7  # Cambia el fuego a casilla libre
+          self.dibujar_matriz(None)  # Vuelve a dibujar la matriz
+
+        # Verifica si el agente toma un cubo de agua
+        elif (agent_y // rectangle_height, agent_x // rectangle_width) in cube_positions: 
+          # Actualizar la matriz y reflejar los cambios en el Canvas
+          for row in range(len(matriz)):
+            for col in range(len(matriz[0])):
+              if matriz[row][col] == 3 or matriz[row][col] == 4: # Comprueba si la celda tiene algún cubo de agua
+                matriz[row][col] = 0 # Reemplaza los cubos por celdas vacías
+          self.dibujar_matriz(None)  # Vuelve a dibujar la matriz
+
         # Asignar los nuevos valores
         self.label_agent_icon.place(x=agent_x, y=agent_y)
 
-        # Pausa de 1 segundo (1000 milisegundos) entre cada movimiento
+        # Pausa de 1/2 segundo (500 milisegundos) entre cada movimiento
         self.after(500, move_agent, index + 1)
         
-    # Iniciar la secuencia de movimientos desde el índice 1 para evitar el none
+    # Iniciar la secuencia de movimientos desde el índice 1 para evitar el None
     move_agent(1)
 
 if __name__ == "__main__":
