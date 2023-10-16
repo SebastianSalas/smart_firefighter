@@ -44,33 +44,25 @@ def checkMovimiento(nodo, nodos_e):
   expanded_nodes = nodos_e
   #up
   if verifyMap([nodo.position[0]-1, nodo.position[1]], nodo.map) and checkParent(nodo, 0):
-    pos_x = nodo.position[0]-1
-    pos_y = nodo.position[1]
-    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 0)
+    child, expanded_nodes = verifyGoal(nodo, pos_x-1, pos_y, nodos_e, 0)
     child_list.append(child)
     
   #down
   if verifyMap([nodo.position[0]+1, nodo.position[1]], nodo.map) and checkParent(nodo, 1):
-    pos_x = nodo.position[0]+1
-    pos_y = nodo.position[1]
-    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 1)
+    child, expanded_nodes = verifyGoal(nodo, pos_x+1, pos_y, nodos_e, 1)
     child_list.append(child)
     
   #right
   if verifyMap([nodo.position[0], nodo.position[1]+1], nodo.map) and checkParent(nodo, 2):
-    pos_x = nodo.position[0]
-    pos_y = nodo.position[1]+1
-    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 2)
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
     child_list.append(child)
     
   #left
   if verifyMap([nodo.position[0], nodo.position[1]-1], nodo.map) and checkParent(nodo, 3):
-    pos_x = nodo.position[0]
-    pos_y = nodo.position[1]-1
-    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y, nodos_e, 3)
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y-1, nodos_e, 3)
     child_list.append(child)
 
-  return child_list, expanded_nodes      
+  return child_list, expanded_nodes  
     
 
 def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
@@ -102,7 +94,7 @@ def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
         node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1, nodo.depth + 1)
         expanded_nodes += 1
     elif nodo.bucket2 and nodo.water_q == 0:
-        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1, nodo.depth + 1)
+        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 2, nodo.depth + 1)
         expanded_nodes += 1
     else:
       node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
