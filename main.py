@@ -1,8 +1,9 @@
-from views.interfaz import Interfaz
+from views.interface import mainInterface
+
 class SmartFirefighter:
-    def main(self):
-        app = Interfaz()
-        app.mainloop()
-          
+  def main(self):
+    app = mainInterface()
+    app.mainloop()
+
 if __name__ == "__main__":
     SmartFirefighter().main()
