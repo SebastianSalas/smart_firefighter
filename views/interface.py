@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import numpy as np
 import amplitud as amplitud
+import profundidad as profundidad
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -125,7 +126,7 @@ class mainInterface(tk.Tk):
     algorithm_functions = {
       "Amplitud": amplitud.solve,
       "Costo uniforme": None, 
-      "Profundidad": None,
+      "Profundidad": profundidad.solve,
       "Avara": None,
       "A*": None
     }
