@@ -28,7 +28,7 @@ class mainInterface(tk.Tk):
     # Propiedades de la ventana
     self.config(bg="white")
     self.title("Proyecto #1: Bombero inteligente - Inteligencia artificial")
-    self.resizable(0,0)
+    self.resizable(True, True)
 
     # Crear el contenedor izquierdo
     self.left_frame = tk.Frame(self, padx=10, pady=10, bg="white")
