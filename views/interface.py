@@ -260,24 +260,33 @@ class mainInterface(tk.Tk):
 
   def agent_movements(self, movements):
 
+    fire_positions = [(row, column) for row in range(len(matriz)) for column in range(len(matriz[0])) if matriz[row][column] == 2]
+
     # Cálculo de posición del agente y longitud movimientos
-    x, y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
+    agent_x, agent_y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
     rectangle_width, rectangle_height = self.canvas_matriz.winfo_width() // len(matriz[0]), self.canvas_matriz.winfo_height() // len(matriz)
     
     def move_agent(index):
-      nonlocal x, y
+      nonlocal agent_x, agent_y
       if index < len(movements):
         if movements[index] == 0:  # Movimiento hacia arriba del agente
-          y -= rectangle_height
+          agent_y -= rectangle_height
         elif movements[index] == 1: # Movimiento hacia abajo del agente
-          y += rectangle_height
+          agent_y += rectangle_height
         elif movements[index] == 3: # Movimiento hacia la izquierda del agente
-          x -= rectangle_width
+          agent_x -= rectangle_width
         elif movements[index] == 2: # Movimiento hacia la derecha del agente
-          x += rectangle_width
+          agent_x += rectangle_width
 
+        # Verificar si el agente pasa sobre un fuego
+        if (agent_y // rectangle_height, agent_x // rectangle_width) in fire_positions:
+            # Actualizar la matriz y reflejar los cambios en el Canvas
+            prov_matriz = matriz
+            prov_matriz[agent_y // rectangle_height][agent_x // rectangle_width] = 0  # Cambia el fuego a casilla libre
+            self.dibujar_matriz(None)  # Vuelve a dibujar la matriz en el Canvas
+            
         # Asignar los nuevos valores
-        self.label_agent_icon.place(x=x, y=y)
+        self.label_agent_icon.place(x=agent_x, y=agent_y)
 
         # Pausa de 1 segundo (1000 milisegundos) entre cada movimiento
         self.after(500, move_agent, index + 1)
