@@ -154,9 +154,15 @@ class mainInterface(tk.Tk):
 
     # Función para reiniciar la selección del tipo de búsqueda
     def restart():
+      global matriz
       start_button.config(state=tk.NORMAL)
       selected_search.set(search_options[0])
       self.selected_algorithm.set("")
+
+      # Optimizar
+      with open("resources/map.txt", "r") as archivo:
+        lineas = archivo.readlines()
+        matriz = np.array([list(map(int, linea.strip().split())) for linea in lineas])
       self.dibujar_matriz(any)
 
     # Botón de reiniciar
