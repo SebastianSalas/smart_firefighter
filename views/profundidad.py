@@ -52,6 +52,11 @@ def checkMovimiento(nodo, nodos_e):
   pos_x = nodo.position[0]
   pos_y = nodo.position[1]
   expanded_nodes = nodos_e
+
+  # right
+  if verifyMap(nodo,[pos_x, pos_y+1]) and checkParent(nodo, 2):
+    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
+    child_list.append(child)
   # up
   if verifyMap(nodo,[pos_x-1, pos_y]) and checkParent(nodo, 0):
     child, expanded_nodes = verifyGoal(nodo, pos_x-1, pos_y, nodos_e, 0)
@@ -60,11 +65,6 @@ def checkMovimiento(nodo, nodos_e):
   # down
   if verifyMap(nodo,[pos_x+1, pos_y]) and checkParent(nodo, 1):
     child, expanded_nodes = verifyGoal(nodo, pos_x+1, pos_y, nodos_e, 1)
-    child_list.append(child)
-
-  # right
-  if verifyMap(nodo,[pos_x, pos_y+1]) and checkParent(nodo, 2):
-    child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
     child_list.append(child)
 
   # left
