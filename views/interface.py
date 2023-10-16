@@ -122,17 +122,30 @@ class mainInterface(tk.Tk):
     self.buttons_frame = tk.Frame(self.right_canvas, bg="white")
     self.buttons_frame.pack(side=tk.BOTTOM, fill="x", padx=10, pady=10)
 
-    # Función de inicio del algoritmo
-    def start_algorithm():
-      with open("resources/map.txt", "r") as file:
-        file_map = file.readlines()
+    algorithm_functions = {
+      "Amplitud": amplitud.solve,
+      "Costo uniforme": None, 
+      "Profundidad": None,
+      "Avara": None,
+      "A*": None
+    }
 
-        map_array = np.array([list(map(int, n.split(' '))) for n in file_map])
-        expanded_nodes, path, depth = amplitud.solve(map_array)
-        
-        print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
-      
-      self.agent_movements(path)
+    # Función del botón de inicio del algoritmo
+    def start_algorithm():
+      algorithm = self.selected_algorithm.get()
+
+      if selected_search.get() != "Seleccionar..." and algorithm != "Seleccionar...":
+        if algorithm in algorithm_functions:
+            print(f"Prueba {algorithm}:")
+            if algorithm_functions[algorithm]: # Eliminar luego, sólo es útil mientras se definen las funciones de los algoritmos
+                expanded_nodes, path, depth = algorithm_functions[algorithm](matriz)
+                self.agent_movements(path)
+                print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
+            else:
+                print(f"{algorithm} no está implementado todavía.")
+
+        # Deshabilitar el botón
+        start_button.config(state=tk.DISABLED)
 
     # Botón de inicio del algoritmo
     start_button = tk.Button(self.buttons_frame, text="Iniciar", bg="indianred", fg="black", command=start_algorithm)
@@ -141,6 +154,7 @@ class mainInterface(tk.Tk):
 
     # Función para reiniciar la selección del tipo de búsqueda
     def restart():
+      start_button.config(state=tk.NORMAL)
       selected_search.set(search_options[0])
       self.selected_algorithm.set("")
       self.dibujar_matriz(any)
@@ -246,10 +260,10 @@ class mainInterface(tk.Tk):
 
   def agent_movements(self, movements):
 
-    # 
+    # Cálculo de posición del agente y longitud movimientos
     x, y = int(self.label_agent_icon.place_info()['x']), int(self.label_agent_icon.place_info()['y'])
     rectangle_width, rectangle_height = self.canvas_matriz.winfo_width() // len(matriz[0]), self.canvas_matriz.winfo_height() // len(matriz)
-    print("Se ejecutó")
+    
     def move_agent(index):
       nonlocal x, y
       if index < len(movements):
