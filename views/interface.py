@@ -244,9 +244,9 @@ class mainInterface(tk.Tk):
         elif matriz[row][column] == 2: # Punto de fuego
           image_path = "resources/images/burning_house.png"
         elif matriz[row][column] == 3: # Cubo de un litro
-          image_path = "resources/images/water_cube.png"
+          image_path = "resources/images/water_cube1.png"
         elif matriz[row][column] == 4: # Cubo de dos litros
-          image_path = "resources/images/water_cube.png"
+          image_path = "resources/images/water_cube2.png"
         elif matriz[row][column] == 5: # Punto de inicio
           image_path = "resources/images/fire_truck.png"
           
