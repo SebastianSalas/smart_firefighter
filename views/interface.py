@@ -135,17 +135,20 @@ class mainInterface(tk.Tk):
       algorithm = self.selected_algorithm.get()
 
       if selected_search.get() != "Seleccionar..." and algorithm != "Seleccionar...":
-        if algorithm in algorithm_functions:
-            print(f"Prueba {algorithm}:")
-            if algorithm_functions[algorithm]: # Eliminar luego, sólo es útil mientras se definen las funciones de los algoritmos
-                expanded_nodes, path, depth = algorithm_functions[algorithm](matriz)
-                self.agent_movements(path)
-                print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
-            else:
-                print(f"{algorithm} no está implementado todavía.")
-
-        # Deshabilitar el botón
+        # Deshabilitar botones
         start_button.config(state=tk.DISABLED)
+        restart_button.config(state=tk.DISABLED)
+
+        # Ejecución del algoritmo seleccionado
+        if algorithm in algorithm_functions:
+          print(f"Prueba {algorithm}:")
+          if algorithm_functions[algorithm]: # Eliminar luego, sólo es útil mientras se definen las funciones de los algoritmos
+              expanded_nodes, path, depth = algorithm_functions[algorithm](matriz)
+              self.agent_movements(path)
+              print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
+          else:
+              print(f"{algorithm} no está implementado todavía.")
+        restart_button.config(state=tk.NORMAL)
 
     # Botón de inicio del algoritmo
     start_button = tk.Button(self.buttons_frame, text="Iniciar", bg="indianred", fg="black", command=start_algorithm)
@@ -260,6 +263,10 @@ class mainInterface(tk.Tk):
           color = "#00B0F0"
           texto = "H"
 
+        elif matriz[row][column] == 7: # Fuego apagado
+          color = "#00B0F0"
+          texto = "FA"
+
         # Dibujar rectángulos en el Canvas
         self.canvas_matriz.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
         self.canvas_matriz.create_text(x_center, y_center, text=texto, fill="black", font=("Helvetica", 14))
@@ -287,8 +294,7 @@ class mainInterface(tk.Tk):
         # Verificar si el agente pasa sobre un fuego
         if (agent_y // rectangle_height, agent_x // rectangle_width) in fire_positions:
             # Actualizar la matriz y reflejar los cambios en el Canvas
-            prov_matriz = matriz
-            prov_matriz[agent_y // rectangle_height][agent_x // rectangle_width] = 0  # Cambia el fuego a casilla libre
+            matriz[agent_y // rectangle_height][agent_x // rectangle_width] = 7  # Cambia el fuego a casilla libre
             self.dibujar_matriz(None)  # Vuelve a dibujar la matriz en el Canvas
             
         # Asignar los nuevos valores
@@ -296,10 +302,9 @@ class mainInterface(tk.Tk):
 
         # Pausa de 1 segundo (1000 milisegundos) entre cada movimiento
         self.after(500, move_agent, index + 1)
-
+        
     # Iniciar la secuencia de movimientos desde el índice 1 para evitar el none
     move_agent(1)
-
 
 if __name__ == "__main__":
   app = mainInterface()
