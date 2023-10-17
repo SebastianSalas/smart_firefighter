@@ -164,4 +164,4 @@ def solve(map):
   path = path[::-1]
   list_cost = list_cost[::-1]
 
-  return expanded_nodes, path, depth, cost, list_cost
+  return expanded_nodes, path, depth, cost
