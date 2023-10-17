@@ -13,6 +13,14 @@ def verifyMap(nodo, position):
         return True
     else:
       return False
+    
+def selectNode(nodes_list):
+  return min(nodes_list, key=lambda nodo: nodo.cost)
+    
+def calculateCost(nodo, water_q):
+  if nodo.bucket1 or nodo.bucket2 and water_q>0:
+    return nodo.cost + (water_q + 1)
+  return nodo.cost + 1
 
 def checkParent(nodo, operator):
   if nodo.parent == None:
@@ -78,36 +86,36 @@ def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
   nodo_map = (nodo.map).copy()
   if nodo_map[nodo.position[0], nodo.position[1]] == 3: #1l
     new_map = np.where(np.logical_or(nodo_map == 3, nodo_map == 4), 0, nodo_map)
-    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, True, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
+    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, True, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q))
     expanded_nodes += 1
   elif nodo_map[nodo.position[0], nodo.position[1]] == 4: #2l
     new_map = np.where(np.logical_or(nodo_map == 3, nodo_map == 4), 0, nodo_map)
-    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, nodo.bucket1, True, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
+    node_child = Node(nodo, operator, [pos_x, pos_y], new_map, nodo.bucket1, True, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q))
     expanded_nodes += 1
   elif nodo_map[nodo.position[0], nodo.position[1]] == 2: #fire
     if nodo.bucket1 and water_temp > 0: 
       nodo_map[nodo.position[0], nodo.position[1]] = 0
-      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1, nodo.depth + 1)
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q -1))
       expanded_nodes += 1
     elif nodo.bucket2 and water_temp > 0:
       nodo_map[nodo.position[0], nodo.position[1]] = 0
-      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1, nodo.depth + 1)
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished + 1, nodo.water_q - 1, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q -1))
       expanded_nodes += 1
     else:
-      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q))
       expanded_nodes += 1
   elif nodo_map[nodo.position[0], nodo.position[1]] == 6: #water
     if nodo.bucket1 and nodo.water_q == 0:
-        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1, nodo.depth + 1)
+        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 1, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q +1))
         expanded_nodes += 1
     elif nodo.bucket2 and nodo.water_q == 0:
-        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 2, nodo.depth + 1)
+        node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q + 2, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q +2))
         expanded_nodes += 1
     else:
-      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
+      node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q))
       expanded_nodes += 1
   else:
-    node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1)
+    node_child = Node(nodo, operator, [pos_x, pos_y], nodo_map, nodo.bucket1, nodo.bucket2, nodo.fire_extinguished, nodo.water_q, nodo.depth + 1, nodo.change_state, calculateCost(nodo, nodo.water_q))
     expanded_nodes += 1
     
   return node_child, expanded_nodes
@@ -132,7 +140,9 @@ def solve(map):
   queue.append(nodo_i)
   count_fire = np.count_nonzero(map == 2)
   while not finished:
-    current_node = queue.popleft()
+    current_node = selectNode(queue)
+    queue.remove(current_node)
+    #print(f"nodo: {current_node.position}, costo: {current_node.cost}")
     if current_node.fire_extinguished == count_fire:
       finished = True
     else:
@@ -140,17 +150,18 @@ def solve(map):
       queue.extend(children_nodes)
   
   path = []
+  list_cost = []
   depth = current_node.depth
+  cost = current_node.cost
   while current_node.parent is not None:
       path.append(current_node.operator) 
+      list_cost.append(current_node.cost)
       current_node = current_node.parent  
 
   path.append(current_node.operator)
+  list_cost.append(current_node.operator)
 
   path = path[::-1]
+  list_cost = list_cost[::-1]
 
-  return expanded_nodes, path, depth
-
-
-      
- 
+  return expanded_nodes, path, depth, cost, list_cost

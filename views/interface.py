@@ -4,6 +4,7 @@ import tkinter as tk
 import numpy as np
 import amplitud as amplitud
 import profundidad as profundidad
+import costo_uniforme
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -127,7 +128,7 @@ class mainInterface(tk.Tk):
 
     algorithm_functions = {
       "Amplitud": amplitud.solve,
-      "Costo uniforme": None, 
+      "Costo uniforme": costo_uniforme.solve, 
       "Profundidad": profundidad.solve,
       "Avara": None,
       "A*": None
