@@ -15,9 +15,16 @@ class Node:
         self.depth = depth
         self.change_state = change_state
         self.heuristic=heuristic
+    
+    def heuristic_fun(self, water_positions, fire_positions):
+        # Calcular la distancia a la cubeta mas cercana
+        closest_water = min([((self.position[0] - water[0]) ** 2 + (self.position[1] - water[1]) ** 2) ** 0.5 for water in water_positions])
 
-    def heuristic_fun(self, goal_position):
-        return ((self.position[0] - goal_position[0]) ** 2 + (self.position[1] - goal_position[1]) ** 2) ** 0.5
+        # Calcular la distancia al punto de fuego más cercano
+        closest_fire = min([((self.position[0] - fire[0]) ** 2 + (self.position[1] - fire[1]) ** 2) ** 0.5 for fire in fire_positions])
+
+        # Sumar las distancias calculadas para obtener la heurística
+        return closest_water + closest_fire
 
 def verifyMap(nodo, position):
     if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
@@ -59,23 +66,28 @@ def checkParent(nodo, operator):
 
     return True
 
-def checkMovimiento(nodo, nodos_e):
+def checkMovimiento(nodo, nodos_e,fire_positions, water_positions):
     child_list = []
     pos_x = nodo.position[0]
     pos_y = nodo.position[1]
     expanded_nodes = nodos_e
+    heuristic_value = nodo.heuristic_fun(water_positions, fire_positions)
 
     if verifyMap(nodo, [pos_x, pos_y+1]) and checkParent(nodo, 2):
         child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
+        child.heuristic = heuristic_value  # Asigna la heurística calculada
         child_list.append(child)
     if verifyMap(nodo, [pos_x-1, pos_y]) and checkParent(nodo, 0):
         child, expanded_nodes = verifyGoal(nodo, pos_x-1, pos_y, nodos_e, 0)
+        child.heuristic = heuristic_value  # Asigna la heurística calculada
         child_list.append(child)
     if verifyMap(nodo, [pos_x+1, pos_y]) and checkParent(nodo, 1):
         child, expanded_nodes = verifyGoal(nodo, pos_x+1, pos_y, nodos_e, 1)
+        child.heuristic = heuristic_value  # Asigna la heurística calculada
         child_list.append(child)
     if verifyMap(nodo, [pos_x, pos_y-1]) and checkParent(nodo, 3):
         child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y-1, nodos_e, 3)
+        child.heuristic = heuristic_value  # Asigna la heurística calculada
         child_list.append(child)
 
     return child_list, expanded_nodes
@@ -135,18 +147,21 @@ def solve(map):
             if (map[i][j] == 5):
                 pos_i = [i, j]
 
-    nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False)
+    nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,heuristic=0)
     stack.append(nodo_i)
-    count_fire = np.count_nonzero(map == 2)
+    #count_fire = np.count_nonzero(map == 2)
+    
+    fire_positions = [[4,3],[5,7]]
+    water_positions = [[1,7],[5,5]]
     
     while not finished:
         current_node = selectNode(stack)
         stack.remove(current_node)
-        if current_node.fire_extinguished == count_fire:
+        
+        if current_node.fire_extinguished == len(fire_positions):
             finished = True
         else:
-            children_nodes, expanded_nodes = checkMovimiento(
-                current_node, expanded_nodes)
+            children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes, fire_positions, water_positions)
             stack.extendleft(reversed(children_nodes))
 
     path = []
