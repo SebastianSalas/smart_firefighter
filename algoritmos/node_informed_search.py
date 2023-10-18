@@ -17,3 +17,11 @@ class Node():
         self.depth = depth
         self.cost = cost
         self.heuristic = heuristic
+    def __lt__(self, other):
+        # Método para comparar nodos basados en su heurística
+        return self.heuristic_value < other.heuristic_value
+
+    def __eq__(self, other):
+        # Método para verificar si dos nodos son iguales
+        return self.position == other.position
+    
