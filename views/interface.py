@@ -4,7 +4,7 @@ import tkinter as tk
 import numpy as np
 import amplitud as amplitud
 import profundidad as profundidad
-import costo_uniforme
+import costo_uniforme as costo
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -128,7 +128,7 @@ class mainInterface(tk.Tk):
 
     algorithm_functions = {
       "Amplitud": amplitud.solve,
-      "Costo uniforme": costo_uniforme.solve, 
+      "Costo uniforme": costo.solve, 
       "Profundidad": profundidad.solve,
       "Avara": None,
       "A*": None
@@ -147,9 +147,9 @@ class mainInterface(tk.Tk):
         if algorithm in algorithm_functions:
           print(f"Prueba {algorithm}:")
           if algorithm_functions[algorithm]: # Eliminar luego, sólo es útil mientras se definen las funciones de los algoritmos
-              expanded_nodes, path, depth = algorithm_functions[algorithm](matriz)
+              expanded_nodes, path, depth, cost = algorithm_functions[algorithm](matriz)
               self.agent_movements(path)
-              print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}")
+              print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}, cost: {cost}")
           else:
               print(f"{algorithm} no está implementado todavía.")
         restart_button.config(state=tk.NORMAL)

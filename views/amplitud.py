@@ -149,7 +149,7 @@ def solve(map):
 
   path = path[::-1]
 
-  return expanded_nodes, path, depth
+  return expanded_nodes, path, depth, 0
 
 
       
