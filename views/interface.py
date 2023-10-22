@@ -147,9 +147,10 @@ class mainInterface(tk.Tk):
         if algorithm in algorithm_functions:
           print(f"Prueba {algorithm}:")
           if algorithm_functions[algorithm]: # Eliminar luego, sólo es útil mientras se definen las funciones de los algoritmos
-              expanded_nodes, path, depth, cost = algorithm_functions[algorithm](matriz)
-              self.agent_movements(path)
+              expanded_nodes, path, depth, cost, time = algorithm_functions[algorithm](matriz)
               print(f"expanded_nodes: {expanded_nodes}, path: {path}, depth: {depth}, cost: {cost}")
+              self.agent_movements(path)
+              self.results(algorithm, expanded_nodes, depth, cost, time)
           else:
               print(f"{algorithm} no está implementado todavía.")
         restart_button.config(state=tk.NORMAL)
@@ -320,6 +321,19 @@ class mainInterface(tk.Tk):
         
     # Iniciar la secuencia de movimientos desde el índice 1 para evitar el None
     move_agent(1)
+
+  # Mostrar los resultados de la ejecución
+  def results(self, algorithm, expanded_nodes, depth, cost, time):
+    results_window = tk.Toplevel(self)
+    results_window.title(algorithm)
+    results_window.config(bg="indianred")
+    results_window.geometry("400x400")
+    # Etiqueta para mostrar los resultados
+    results_label = tk.Label(results_window, text=f"Resultados de la ejecución de {algorithm}:\n\nNodos expandidos: {expanded_nodes}\n\nProfundidad del árbol: {depth}\n\nCosto de la solución: {cost}\n\nTiempo de cálculo: {time} segundos")
+    results_label.config(font=('Helvetica', 11), bg="white")
+    results_label.place(relx=0.5, rely=0.5, anchor="center")
+    results_window.transient(self)
+    results_window.wait_window()
 
 if __name__ == "__main__":
   app = mainInterface()
