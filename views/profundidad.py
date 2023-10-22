@@ -152,4 +152,5 @@ def solve(map):
 
   path = path[::-1]
 
-  return expanded_nodes, path, depth, 0
+  # Nodos expandidos, camino, profundidad, costo, tiempo de cálculo
+  return expanded_nodes, path, depth, 0, 0
