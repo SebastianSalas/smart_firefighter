@@ -1,6 +1,7 @@
 from collections import deque
 import numpy as np
 from NodeNotInformedSearch import Node
+import time
   
 def verifyMap(nodo, position):
     if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
@@ -123,6 +124,7 @@ def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
     
 
 def solve(map):
+  start_time = time.time()
   queue = deque()
   children_nodes = []
   finished = False
@@ -142,26 +144,22 @@ def solve(map):
   while not finished:
     current_node = selectNode(queue)
     queue.remove(current_node)
-    #print(f"nodo: {current_node.position}, costo: {current_node.cost}")
     if current_node.fire_extinguished == count_fire:
+      end_time = time.time()
       finished = True
     else:
       children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
       queue.extend(children_nodes)
   
   path = []
-  list_cost = []
   depth = current_node.depth
   cost = current_node.cost
   while current_node.parent is not None:
-      path.append(current_node.operator) 
-      list_cost.append(current_node.cost)
-      current_node = current_node.parent  
+    path.append(current_node.operator) 
+    current_node = current_node.parent  
 
   path.append(current_node.operator)
-  list_cost.append(current_node.operator)
 
   path = path[::-1]
-  list_cost = list_cost[::-1]
 
-  return expanded_nodes, path, depth, cost
+  return expanded_nodes, path, depth, cost, (end_time - start_time)
