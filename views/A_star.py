@@ -174,5 +174,13 @@ def solve(map):
   path = []
   depth = current_node.depth
   cost = current_node.cost
+  
+  while current_node.parent is not None:
+      path.append(current_node.operator) 
+      current_node = current_node.parent  
+
+  path.append(current_node.operator)
+
+  path = path[::-1]
 
   return expanded_nodes, path, depth, cost, (end_time - start_time)
