@@ -32,7 +32,7 @@ def calculateHeuristic(nodo):
     bucket2 = np.array(np.where(nodo.map == 4)).T
     b1 = distance.cdist(nodo_position, bucket1, metric='euclidean').item()
     b2 = distance.cdist(nodo_position, bucket2, metric='euclidean').item()
-    if b1 >= b2:
+    if b1 <= b2:
       return b1
     else:
       return b2
