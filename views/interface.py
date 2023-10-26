@@ -5,6 +5,7 @@ import numpy as np
 import amplitud as amplitud
 import profundidad as profundidad
 import costo_uniforme as costo
+import A_star
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -131,7 +132,7 @@ class mainInterface(tk.Tk):
       "Costo uniforme": costo.solve, 
       "Profundidad": profundidad.solve,
       "Avara": None,
-      "A*": None
+      "A*": A_star.solve
     }
 
     # Función del botón de inicio del algoritmo

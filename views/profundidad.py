@@ -1,6 +1,7 @@
 from collections import deque
 import numpy as np
 from NodeNotInformedSearch import Node
+import time
 
 
 def verifyMap(nodo, position):
@@ -118,6 +119,7 @@ def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
 
 
 def solve(map):
+  start_time = time.time()
   stack = deque()
   children_nodes = []
   finished = False
@@ -136,6 +138,7 @@ def solve(map):
   while not finished:
     current_node = stack.popleft()
     if current_node.fire_extinguished == count_fire:
+      end_time = time.time()
       finished = True
     else:
       children_nodes, expanded_nodes = checkMovimiento(
@@ -152,5 +155,4 @@ def solve(map):
 
   path = path[::-1]
 
-  # Nodos expandidos, camino, profundidad, costo, tiempo de cálculo
-  return expanded_nodes, path, depth, 0, 0
+  return expanded_nodes, path, depth, 0, (end_time - start_time)
