@@ -1,9 +1,19 @@
 from collections import deque
 import numpy as np
 from NodeNotInformedSearch import Node
+import time
   
-def verifyMap(nodo, map):
-  return 0 <= nodo[0] < map.shape[0] and 0 <= nodo[1] < map.shape[1] and map[nodo[0], nodo[1]] != 1
+def verifyMap(nodo, position):
+    if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
+      if nodo.map[position[0], position[1]] == 2:
+        if (nodo.bucket1 or nodo.bucket2) and nodo.water_q != 0:
+          return True
+        else:
+          return False
+      else:
+        return True
+    else:
+      return False
 
 def checkParent(nodo, operator):
   if nodo.parent == None:
@@ -38,27 +48,25 @@ def checkParent(nodo, operator):
   
     
 def checkMovimiento(nodo, nodos_e):
-  child_list=[]
+  child_list = []
   pos_x = nodo.position[0]
   pos_y = nodo.position[1]
   expanded_nodes = nodos_e
-  #up
-  if verifyMap([nodo.position[0]-1, nodo.position[1]], nodo.map) and checkParent(nodo, 0):
-    child, expanded_nodes = verifyGoal(nodo, pos_x-1, pos_y, nodos_e, 0)
-    child_list.append(child)
-    
-  #down
-  if verifyMap([nodo.position[0]+1, nodo.position[1]], nodo.map) and checkParent(nodo, 1):
-    child, expanded_nodes = verifyGoal(nodo, pos_x+1, pos_y, nodos_e, 1)
-    child_list.append(child)
-    
-  #right
-  if verifyMap([nodo.position[0], nodo.position[1]+1], nodo.map) and checkParent(nodo, 2):
+  
+  # right
+  if verifyMap(nodo,[pos_x, pos_y+1]) and checkParent(nodo, 2):
     child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
     child_list.append(child)
-    
-  #left
-  if verifyMap([nodo.position[0], nodo.position[1]-1], nodo.map) and checkParent(nodo, 3):
+  # up
+  if verifyMap(nodo,[pos_x-1, pos_y]) and checkParent(nodo, 0):
+    child, expanded_nodes = verifyGoal(nodo, pos_x-1, pos_y, nodos_e, 0)
+    child_list.append(child)
+  # down
+  if verifyMap(nodo,[pos_x+1, pos_y]) and checkParent(nodo, 1):
+    child, expanded_nodes = verifyGoal(nodo, pos_x+1, pos_y, nodos_e, 1)
+    child_list.append(child)
+  # left
+  if verifyMap(nodo,[pos_x, pos_y-1]) and checkParent(nodo, 3):
     child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y-1, nodos_e, 3)
     child_list.append(child)
 
@@ -108,6 +116,7 @@ def verifyGoal(nodo, pos_x, pos_y, nodos_e, operator):
     
 
 def solve(map):
+  start_time = time.time()
   queue = deque()
   children_nodes = []
   finished = False
@@ -127,6 +136,7 @@ def solve(map):
   while not finished:
     current_node = queue.popleft()
     if current_node.fire_extinguished == count_fire:
+      end_time = time.time()
       finished = True
     else:
       children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
@@ -142,7 +152,7 @@ def solve(map):
 
   path = path[::-1]
 
-  return expanded_nodes, path, depth
+  return expanded_nodes, path, depth, 0, (end_time - start_time)
 
 
       
