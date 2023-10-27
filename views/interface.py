@@ -6,6 +6,7 @@ import amplitud as amplitud
 import profundidad as profundidad
 import costo_uniforme as costo
 import A_star
+import avara
 from PIL import Image, ImageTk
 
 class mainInterface(tk.Tk):
@@ -131,7 +132,7 @@ class mainInterface(tk.Tk):
       "Amplitud": amplitud.solve,
       "Costo uniforme": costo.solve, 
       "Profundidad": profundidad.solve,
-      "Avara": None,
+      "Avara": avara.solve,
       "A*": A_star.solve
     }
 
