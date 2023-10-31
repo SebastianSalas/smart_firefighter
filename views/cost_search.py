@@ -20,6 +20,9 @@ def selectNode(nodes_list):
 
 def Goal(nodo):
   return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
+
+def checkFinished(nodo):
+  return nodo.fire_extinguished == 1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
     
 def calculateCost(nodo, water_q):
   if nodo.bucket1 or nodo.bucket2 and water_q>0:
@@ -147,6 +150,8 @@ def solve(map):
   while not finished:
     current_node = selectNode(queue)
     queue.remove(current_node)
+    if checkFinished(current_node):
+      current_node.fire_extinguished += 1
     if current_node.fire_extinguished == count_fire:
       end_time = time.time()
       finished = True
