@@ -46,7 +46,6 @@ def calculateHeuristic(nodo):
     return distance.cdist(nodo_position, np.array(np.where(nodo.map == 6)).T, metric='euclidean').item()
   if (nodo.bucket1 or nodo.bucket2) and nodo.water_q > 0: #se calcula la distancia del nodo hasta los fuegos
     return (distance.cdist(nodo_position, np.array(np.where(nodo.map == 2)).T, metric='euclidean')).min()
-    
   return 0
 
 def checkParent(nodo, operator):
@@ -81,7 +80,7 @@ def checkParent(nodo, operator):
   return True
   
     
-def checkMovimiento(nodo, nodos_e):
+def checkMove(nodo, nodos_e):
   child_list = []
   pos_x = nodo.position[0]
   pos_y = nodo.position[1]
@@ -176,7 +175,7 @@ def solve(map):
       end_time = time.time()
       finished = True
     else:
-      children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
+      children_nodes, expanded_nodes = checkMove(current_node, expanded_nodes)
       queue.extend(children_nodes)
   
   path = []
