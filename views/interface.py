@@ -2,9 +2,9 @@ import os
 import uuid
 import tkinter as tk
 import numpy as np
-import amplitud as amplitud
-import profundidad as profundidad
-import costo_uniforme as costo
+import breadth_search as amplitud
+import depth_search as profundidad
+import cost_search as costo_uniforme
 import A_star
 import avara
 from PIL import Image, ImageTk
