@@ -1,30 +1,16 @@
-
 import numpy as np
 from node_informed_search import Node
 from collections import deque
-class Node:
-    def __init__(self, parent, operator, position, map, bucket1, bucket2, fire_extinguished, water_q, depth, change_state,heuristic=0):
-        self.parent = parent
-        self.operator = operator
-        self.position = position
-        self.map = map
-        self.bucket1 = bucket1
-        self.bucket2 = bucket2
-        self.fire_extinguished = fire_extinguished
-        self.water_q = water_q
-        self.depth = depth
-        self.change_state = change_state
-        self.heuristic=heuristic
     
-    def heuristic_fun(self, water_positions, fire_positions):
-        # Calcular la distancia a la cubeta mas cercana
-        closest_water = min([((self.position[0] - water[0]) ** 2 + (self.position[1] - water[1]) ** 2) ** 0.5 for water in water_positions])
-
-        # Calcular la distancia al punto de fuego más cercano
-        closest_fire = min([((self.position[0] - fire[0]) ** 2 + (self.position[1] - fire[1]) ** 2) ** 0.5 for fire in fire_positions])
-
-        # Sumar las distancias calculadas para obtener la heurística
-        return closest_water + closest_fire
+def heuristic_fun(nodo, water_positions, fire_positions, bucket_positions):
+    # Calcular la distancia al punto de agua más cercano
+        closest_water = min([((nodo.position[0] - water[0]) ** 2 + (nodo.position[1] - water[1]) ** 2) ** 0.5 for water in water_positions])
+    # Calcular la distancia al punto de fuego más cercano
+        closest_fire = min([((nodo.position[0] - fire[0]) ** 2 + (nodo.position[1] - fire[1]) ** 2) ** 0.5 for fire in fire_positions])
+    # Calcular la distancia a la cubeta más cercana
+        closest_bucket = min([((nodo.position[0] - bucket[0]) ** 2 + (nodo.position[1] - bucket[1]) ** 2) ** 0.5 for bucket in bucket_positions])
+    # Sumar las distancias calculadas para obtener la heurística
+        return closest_water + closest_fire + closest_bucket
 
 def verifyMap(nodo, position):
     if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
@@ -66,12 +52,12 @@ def checkParent(nodo, operator):
 
     return True
 
-def checkMovimiento(nodo, nodos_e,fire_positions, water_positions):
+def checkMovimiento(nodo, nodos_e,fire_positions, water_positions,bucket_positions):
     child_list = []
     pos_x = nodo.position[0]
     pos_y = nodo.position[1]
     expanded_nodes = nodos_e
-    heuristic_value = nodo.heuristic_fun(water_positions, fire_positions)
+    heuristic_value = heuristic_fun(nodo,water_positions, fire_positions,bucket_positions)
 
     if verifyMap(nodo, [pos_x, pos_y+1]) and checkParent(nodo, 2):
         child, expanded_nodes = verifyGoal(nodo, pos_x, pos_y+1, nodos_e, 2)
@@ -147,12 +133,13 @@ def solve(map):
             if (map[i][j] == 5):
                 pos_i = [i, j]
 
-    nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,heuristic=0)
+    nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,0,0)
     stack.append(nodo_i)
     #count_fire = np.count_nonzero(map == 2)
     
     fire_positions = [[4,3],[5,7]]
-    water_positions = [[1,7],[5,5]]
+    bucket_positions = [[1,7],[5,5]]
+    water_position=[[4,5]]
     
     while not finished:
         current_node = selectNode(stack)
@@ -161,18 +148,25 @@ def solve(map):
         if current_node.fire_extinguished == len(fire_positions):
             finished = True
         else:
-            children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes, fire_positions, water_positions)
+            children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes, water_position, fire_positions,bucket_positions)
             stack.extendleft(reversed(children_nodes))
 
     path = []
+    list_heu = []
     depth = current_node.depth
+    heuris = current_node.heuristic
     while current_node.parent is not None:
         path.append(current_node.operator)
+        list_heu.append(current_node.heuristic)
         current_node = current_node.parent
+        
     path.append(current_node.operator)
+    list_heu.append(current_node.operator)
     path = path[::-1]
+    list_heu = list_heu[::-1]
+    cost = current_node.cost
 
-    return expanded_nodes, path, depth
+    return expanded_nodes, path, depth,heuris,list_heu,cost
 
 # Prueba del algoritmo
 map = np.array([
@@ -188,7 +182,9 @@ map = np.array([
     [0, 1, 0, 1, 1, 1, 0, 0, 0, 0]
 ])
 
-expanded_nodes, path, depth = solve(map)
+expanded_nodes, path, depth,heuris,list_heu,cost = solve(map)
 print("Número de nodos expandidos:", expanded_nodes)
 print("Camino encontrado:", path)
 print("Profundidad del camino:", depth)
+print("Heuristicas: ",list_heu)
+print("Costo:", cost)
