@@ -1,7 +1,7 @@
 import numpy as np
-import amplitud as amplitud
-import profundidad 
-import costo_uniforme
+import breadth_search as amplitud
+import depth_search as profundidad
+import cost_search as costo_uniforme
 import A_star
 
 class writeMap:

@@ -16,6 +16,9 @@ def verifyMap(nodo, position):
     else:
       return False
     
+def Goal(nodo):
+  return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
+
 def selectNode(nodes_list):
   return min(nodes_list, key=lambda nodo: nodo.heuristic)
     
@@ -49,25 +52,25 @@ def checkParent(nodo, operator):
   
   if operator == 0: #up
     if nodo.parent.position == [nodo.position[0] - 1, nodo.position[1]]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True    
   elif operator == 1: #down
     if nodo.parent.position == [nodo.position[0] + 1, nodo.position[1]]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True
   elif operator == 2: #right
     if nodo.parent.position == [nodo.position[0], nodo.position[1] + 1]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True   
   elif operator == 3: #left
     if nodo.parent.position == [nodo.position[0], nodo.position[1] - 1]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True

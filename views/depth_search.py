@@ -15,7 +15,9 @@ def verifyMap(nodo, position):
         return True
     else:
       return False
-
+    
+def Goal(nodo):
+  return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
 
 def verifyNodeBranchCicle(nodo, next_pos):
   current_nod = nodo
@@ -33,16 +35,16 @@ def checkParent(nodo, operator):
     return True
 
   if operator == 0:  # up
-    if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+    if not Goal(nodo):
       return verifyNodeBranchCicle(nodo, [nodo.position[0] - 1, nodo.position[1]])
   elif operator == 1:  # down
-    if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+    if not Goal(nodo):
       return verifyNodeBranchCicle(nodo, [nodo.position[0] + 1, nodo.position[1]])
   elif operator == 2:  # right
-    if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+    if not Goal(nodo):
       return verifyNodeBranchCicle(nodo, [nodo.position[0], nodo.position[1] + 1])
   elif operator == 3:  # left
-    if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+    if not Goal(nodo):
       return verifyNodeBranchCicle(nodo, [nodo.position[0], nodo.position[1] - 1])
 
   return True
