@@ -135,7 +135,6 @@ def solve(map):
 
     nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,0,0)
     stack.append(nodo_i)
-    #count_fire = np.count_nonzero(map == 2)
     
     fire_positions = [[4,3],[5,7]]
     bucket_positions = [[1,7],[5,5]]
@@ -167,24 +166,3 @@ def solve(map):
     cost = current_node.cost
 
     return expanded_nodes, path, depth,heuris,list_heu,cost
-
-# Prueba del algoritmo
-map = np.array([
-    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 1, 0, 1, 1, 1, 1],
-    [0, 1, 0, 2, 0, 0, 0, 0, 0, 1],
-    [0, 1, 0, 1, 1, 1, 1, 1, 0, 0],
-    [5, 0, 0, 6, 4, 0, 0, 1, 0, 1],
-    [0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-    [3, 0, 0, 0, 2, 0, 0, 1, 0, 1],
-    [0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-    [0, 1, 0, 1, 1, 1, 0, 0, 0, 0]
-])
-
-expanded_nodes, path, depth,heuris,list_heu,cost = solve(map)
-print("Número de nodos expandidos:", expanded_nodes)
-print("Camino encontrado:", path)
-print("Profundidad del camino:", depth)
-print("Heuristicas: ",list_heu)
-print("Costo:", cost)
