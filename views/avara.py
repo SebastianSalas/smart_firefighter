@@ -163,21 +163,3 @@ def solve(map):
   path = path[::-1]
 
   return expanded_nodes, path, depth, 0, (end_time - start_time)
-
-map = np.array([
-    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 1, 0, 1, 1, 1, 1],
-    [0, 1, 0, 2, 0, 0, 0, 0, 0, 1],
-    [0, 1, 0, 1, 1, 1, 1, 1, 0, 0],
-    [5, 0, 0, 6, 4, 0, 0, 1, 0, 1],
-    [0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-    [3, 0, 0, 0, 2, 0, 0, 1, 0, 1],
-    [0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-    [0, 1, 0, 1, 1, 1, 0, 0, 0, 0]
-])
-
-expanded_nodes, path, depth,cost,end_time= solve(map)
-print("Número de nodos expandidos:", expanded_nodes)
-print("Camino encontrado:", path)
-print("Profundidad del camino:", depth)
