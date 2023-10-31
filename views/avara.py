@@ -132,26 +132,27 @@ def solve(map):
   pos_i = []
 
   for i in range(map.shape[0]):
-      for j in range(map.shape[1]):
-          if (map[i][j] == 5):
-              pos_i = [i, j]
+        for j in range(map.shape[1]):
+            if (map[i][j] == 5):
+                pos_i = [i, j]
 
-  nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,0)
+  nodo_i = Node(None, None, pos_i, map, False, False, 0, 0, 0, False,0,0)
   stack.append(nodo_i)
-  
+    
   fire_positions = [[4,3],[5,7]]
-  water_positions = [[1,7],[5,5]]
-  
+  bucket_positions = [[1,7],[5,5]]
+  water_position=[[4,5]]
+    
   while not finished:
-      current_node = selectNode(stack)
-      stack.remove(current_node)
-      
-      if current_node.fire_extinguished == len(fire_positions):
-          finished = True
-          end_time = time.time()
-      else:
-          children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes, fire_positions, water_positions)
-          stack.extendleft(reversed(children_nodes))
+        current_node = selectNode(stack)
+        stack.remove(current_node)
+        
+        if current_node.fire_extinguished == len(fire_positions):
+            finished = True
+            end_time = time.time()
+        else:
+            children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes, water_position, fire_positions,bucket_positions)
+            stack.extendleft(reversed(children_nodes))
 
   path = []
   depth = current_node.depth
@@ -162,3 +163,21 @@ def solve(map):
   path = path[::-1]
 
   return expanded_nodes, path, depth, 0, (end_time - start_time)
+
+map = np.array([
+    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 1, 0, 1, 1, 1, 1],
+    [0, 1, 0, 2, 0, 0, 0, 0, 0, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 0, 0],
+    [5, 0, 0, 6, 4, 0, 0, 1, 0, 1],
+    [0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+    [3, 0, 0, 0, 2, 0, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+    [0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 1, 0, 0, 0, 0]
+])
+
+expanded_nodes, path, depth,cost,end_time= solve(map)
+print("Número de nodos expandidos:", expanded_nodes)
+print("Camino encontrado:", path)
+print("Profundidad del camino:", depth)
