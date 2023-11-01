@@ -189,5 +189,4 @@ def solve(map):
   path.append(current_node.operator)
 
   path = path[::-1]
-  time=0
   return expanded_nodes, path, depth, cost, (end_time - start_time)

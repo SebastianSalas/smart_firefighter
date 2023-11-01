@@ -213,5 +213,4 @@ def solve(map):
     path = path[::-1]
     list_heu = list_heu[::-1]
     cost = current_node.cost
-    time=0
     return expanded_nodes, path, depth, cost, (end_time - start_time)
