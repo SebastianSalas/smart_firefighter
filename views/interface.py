@@ -2,9 +2,9 @@ import os
 import uuid
 import tkinter as tk
 import numpy as np
-import amplitud as amplitud
-import profundidad as profundidad
-import costo_uniforme as costo
+import breadth_search as amplitud
+import depth_search as profundidad
+import cost_search as costo
 import A_star
 import avara
 from PIL import Image, ImageTk
@@ -331,7 +331,7 @@ class mainInterface(tk.Tk):
     results_window.config(bg="indianred")
     results_window.geometry("400x400")
     # Etiqueta para mostrar los resultados
-    results_label = tk.Label(results_window, text=f"Resultados de la ejecución de {algorithm}:\n\nNodos expandidos: {expanded_nodes}\n\nProfundidad del árbol: {depth}\n\nCosto de la solución: {cost}\n\nTiempo de cálculo: {time: .2f} segundos")
+    results_label = tk.Label(results_window, text=f"Resultados de la ejecución de {algorithm}:\n\nNodos expandidos: {expanded_nodes}\n\nProfundidad del árbol: {depth}\n\nCosto de la solución: {cost}\n\nTiempo de cálculo: {time: .5f} segundos")
     results_label.config(font=('Helvetica', 11), bg="white")
     results_label.place(relx=0.5, rely=0.5, anchor="center")
     results_window.transient(self)

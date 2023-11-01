@@ -11,3 +11,4 @@ class Node():
     self.depth = depth
     self.change_state = change_state
     self.cost = cost
+      

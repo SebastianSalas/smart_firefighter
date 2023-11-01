@@ -16,6 +16,12 @@ def verifyMap(nodo, position):
     else:
       return False
     
+def Goal(nodo):
+  return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
+
+def checkFinished(nodo):
+  return nodo.fire_extinguished == 1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+
 def selectNode(nodes_list):
   return min(nodes_list, key=lambda nodo: nodo.heuristic)
     
@@ -40,7 +46,6 @@ def calculateHeuristic(nodo):
     return distance.cdist(nodo_position, np.array(np.where(nodo.map == 6)).T, metric='euclidean').item()
   if (nodo.bucket1 or nodo.bucket2) and nodo.water_q > 0: #se calcula la distancia del nodo hasta los fuegos
     return (distance.cdist(nodo_position, np.array(np.where(nodo.map == 2)).T, metric='euclidean')).min()
-    
   return 0
 
 def checkParent(nodo, operator):
@@ -49,25 +54,25 @@ def checkParent(nodo, operator):
   
   if operator == 0: #up
     if nodo.parent.position == [nodo.position[0] - 1, nodo.position[1]]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True    
   elif operator == 1: #down
     if nodo.parent.position == [nodo.position[0] + 1, nodo.position[1]]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True
   elif operator == 2: #right
     if nodo.parent.position == [nodo.position[0], nodo.position[1] + 1]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True   
   elif operator == 3: #left
     if nodo.parent.position == [nodo.position[0], nodo.position[1] - 1]:
-      if nodo.parent.bucket1 == nodo.bucket1 and nodo.parent.bucket2 == nodo.bucket2 and nodo.parent.fire_extinguished == nodo.fire_extinguished and nodo.parent.water_q == nodo.water_q:
+      if not Goal(nodo):
         return False
       else:
         return True
@@ -75,7 +80,7 @@ def checkParent(nodo, operator):
   return True
   
     
-def checkMovimiento(nodo, nodos_e):
+def checkMove(nodo, nodos_e):
   child_list = []
   pos_x = nodo.position[0]
   pos_y = nodo.position[1]
@@ -164,11 +169,13 @@ def solve(map):
   while not finished:
     current_node = selectNode(queue)
     queue.remove(current_node)
+    if checkFinished(current_node):
+      current_node.fire_extinguished += 1
     if current_node.fire_extinguished == count_fire:
       end_time = time.time()
       finished = True
     else:
-      children_nodes, expanded_nodes = checkMovimiento(current_node, expanded_nodes)
+      children_nodes, expanded_nodes = checkMove(current_node, expanded_nodes)
       queue.extend(children_nodes)
   
   path = []
@@ -182,5 +189,4 @@ def solve(map):
   path.append(current_node.operator)
 
   path = path[::-1]
-
   return expanded_nodes, path, depth, cost, (end_time - start_time)
