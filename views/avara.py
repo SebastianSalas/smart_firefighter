@@ -27,9 +27,8 @@ def Goal(nodo):
     return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
 
 
-def checkFinished(nodo):
-    return nodo.fire_extinguished == 1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
-
+def checkFinished(nodo,count_fire):
+  return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
 
 def verifyMap(nodo, position):
     if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
@@ -191,7 +190,7 @@ def solve(map):
     while not finished:
         current_node = selectNode(stack)
         stack.remove(current_node)
-        if checkFinished(current_node):
+        if checkFinished(current_node, count_fire):
             current_node.fire_extinguished += 1
         if current_node.fire_extinguished == count_fire:
             finished = True

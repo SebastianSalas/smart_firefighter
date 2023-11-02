@@ -19,8 +19,8 @@ def verifyMap(nodo, position):
 def Goal(nodo):
   return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
 
-def checkFinished(nodo):
-  return nodo.fire_extinguished == 1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+def checkFinished(nodo,count_fire):
+  return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
 
 def selectNode(nodes_list):
   return min(nodes_list, key=lambda nodo: nodo.heuristic)
@@ -169,7 +169,7 @@ def solve(map):
   while not finished:
     current_node = selectNode(queue)
     queue.remove(current_node)
-    if checkFinished(current_node):
+    if checkFinished(current_node, count_fire):
       current_node.fire_extinguished += 1
     if current_node.fire_extinguished == count_fire:
       end_time = time.time()
