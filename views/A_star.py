@@ -43,7 +43,7 @@ def calculateHeuristic(nodo):
     else:
       return b2
   if (nodo.bucket1 or nodo.bucket2) and nodo.water_q == 0:#se calcula la distancia del nodo hasta el agua
-    return distance.cdist(nodo_position, np.array(np.where(nodo.map == 6)).T, metric='euclidean').item()
+    return distance.cdist(nodo_position, np.array(np.where(nodo.map == 6)).T, metric='euclidean').min()
   if (nodo.bucket1 or nodo.bucket2) and nodo.water_q > 0: #se calcula la distancia del nodo hasta los fuegos
     return (distance.cdist(nodo_position, np.array(np.where(nodo.map == 2)).T, metric='euclidean')).min()
   return 0
