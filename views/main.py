@@ -1,4 +1,4 @@
-from views.interface import mainInterface
+from map_interface import mainInterface
 
 class SmartFirefighter:
   def main(self):
