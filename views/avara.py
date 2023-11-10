@@ -28,7 +28,10 @@ def Goal(nodo):
 
 
 def checkFinished(nodo,count_fire):
-  return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+  if(nodo.water_q > 0):
+    return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+  else:
+    return False
 
 def verifyMap(nodo, position):
     if 0 <= position[0] < nodo.map.shape[0] and 0 <= position[1] < nodo.map.shape[1] and nodo.map[position[0], position[1]] != 1:
