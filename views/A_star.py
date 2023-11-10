@@ -20,7 +20,10 @@ def Goal(nodo):
   return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
 
 def checkFinished(nodo,count_fire):
-  return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+  if(nodo.water_q > 0):
+    return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+  else:
+    return False
 
 def selectNode(nodes_list):
   return min(nodes_list, key=lambda nodo: nodo.heuristic)

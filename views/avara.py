@@ -40,8 +40,11 @@ def Goal(nodo):
     return nodo.map[nodo.position[0], nodo.position[1]] in [2, 3, 4, 6]
 
 
-def checkFinished(nodo, count_fire):
+def checkFinished(nodo,count_fire):
+  if(nodo.water_q > 0):
     return nodo.fire_extinguished == count_fire-1 and nodo.map[nodo.position[0], nodo.position[1]] in [2]
+  else:
+    return False
 
 
 def verifyMap(nodo, position):
